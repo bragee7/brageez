@@ -1,0 +1,64 @@
+{
+  "users": [
+    {
+      "id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "Name": "Police Officer",
+      "Email": "police@guardian.com",
+      "Password": "$2a$10$bfA8EVj4PtNoPtWQNWOGyehpzoTH0Hp3p9nWIm4F2UI.swU0vJe9e",
+      "Role": "police",
+      "Created_at": "2026-03-21 08:35:12",
+      "Updated_at": "2026-06-14 00:00:00",
+      "isVerified": 1,
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "Name": "Test User",
+      "Email": "user@guardian.com",
+      "Password": "$2a$10$YeExqZbWQrhCxnLe7Bafru5/9tAudCRjm1s2FnSjRVah6yVmJIIFG",
+      "Role": "user",
+      "Created_at": "2026-03-21 08:35:12",
+      "Updated_at": "2026-06-14 00:00:00",
+      "isVerified": 1,
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "id": "1b09e135-10cc-4ee0-9560-20b9a10ba07f",
+      "Name": "BRAGATHEESH V",
+      "Email": "vbragatheesh@gmail.com",
+      "Password": "$2a$10$eiY5xA/S6UdCyypNwjmV2.mhdG32viCwt4LXTql3/bE84OJ6b.0tq",
+      "Role": "user",
+      "Created_at": "2026-03-21 08:42:39",
+      "Updated_at": "2026-06-14 00:00:00",
+      "isVerified": 1,
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "id": "24e660e5-81a6-499e-aec1-e5f4dba1e442",
+      "Name": "bragee",
+      "Email": "bragatheeshv@gmail.com",
+      "Password": "$2a$10$ZSjVjfsrBtIFwFMnQfaiTOSdmbBXT4uKZZ8jaZ.AKMu9Oz0Wbn/C2",
+      "Role": "police",
+      "Created_at": "2026-03-21 09:20:13",
+      "Updated_at": "2026-06-14 00:00:00",
+      "isVerified": 1,
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "id": "fe1ace51-e74e-4609-a9c3-5fedffbd1aeb",
+      "Name": "bragee",
+      "Email": "use@guardian.com",
+      "Password": "$2a$10$My/7lGdjlQqNnhdWvWthvOeT5Fs/tPE7N2KNYFiquncpP/xgLdQM.",
+      "Role": "police",
+      "Created_at": "2026-03-25 03:04:13",
+      "Updated_at": "2026-06-14 00:00:00",
+      "isVerified": 1,
+      "otp": null,
+      "otpExpiry": null
+    }
+  ]
+}

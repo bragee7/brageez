@@ -1,0 +1,35 @@
+- generic [ref=f8e2]:
+  - navigation [ref=f8e3]:
+    - generic [ref=f8e5]:
+      - link "Guardian" [ref=f8e6] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f8e11]:
+        - link "Dashboard" [ref=f8e12] [cursor=pointer]:
+          - /url: /dashboard
+        - generic [ref=f8e13]:
+          - generic [ref=f8e14]:
+            - paragraph [ref=f8e15]: Test User
+            - paragraph [ref=f8e16]: user
+          - button "Logout" [ref=f8e17] [cursor=pointer]
+  - generic [ref=f8e19]:
+    - generic [ref=f8e20]:
+      - heading "Emergency Dashboard" [level=1] [ref=f8e21]
+      - paragraph [ref=f8e22]: Welcome, Test User
+    - generic [ref=f8e24]:
+      - heading "Status" [level=2] [ref=f8e25]
+      - generic [ref=f8e26]: Idle
+    - generic [ref=f8e28]:
+      - generic [ref=f8e29]: Voice Protection Active - Listening for "Help Me", "Emergency", or "Save Me"
+      - button "SEND SOS ALERT" [ref=f8e32] [cursor=pointer]
+    - generic [ref=f8e37]:
+      - heading "How It Works" [level=3] [ref=f8e38]
+      - generic [ref=f8e39]:
+        - generic [ref=f8e40]:
+          - generic [ref=f8e41]: "1"
+          - paragraph [ref=f8e43]: Voice recognition is always active in background
+        - generic [ref=f8e44]:
+          - generic [ref=f8e45]: "2"
+          - paragraph [ref=f8e47]: Say "Help Me", "Emergency", or "Save Me"
+        - generic [ref=f8e48]:
+          - generic [ref=f8e49]: "3"
+          - paragraph [ref=f8e51]: 30-second recording will be sent to police

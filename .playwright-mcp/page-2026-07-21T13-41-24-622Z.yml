@@ -1,0 +1,12 @@
+- navigation [ref=f2e3]:
+  - generic [ref=f2e5]:
+    - link "Guardian" [ref=f2e6] [cursor=pointer]:
+      - /url: /
+    - generic [ref=f2e11]:
+      - link "Dashboard" [ref=f2e12] [cursor=pointer]:
+        - /url: /police
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]:
+          - paragraph [ref=f2e15]: Police Officer
+          - paragraph [ref=f2e16]: police
+        - button "Logout" [ref=f2e17] [cursor=pointer]

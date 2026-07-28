@@ -1,0 +1,1892 @@
+{
+  "audit": [
+    {
+      "id": "39d8d816-5880-4399-9952-9ae1c607884e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 13:10:36"
+    },
+    {
+      "id": "f106a4ef-943a-4ffd-a182-dc5e88d856b7",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "af7a1c10-41b6-48d9-9412-8a60320ca5a6",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:11:44"
+    },
+    {
+      "id": "a3767380-d503-43e2-b67a-2408217cb27b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ea2c7369-119c-4897-8048-ae8924f56496",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:11:44"
+    },
+    {
+      "id": "9bdcca35-b48e-4a83-9b57-7edd42c9651c",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2b701c6e-cd26-4d3a-aaaf-7432daf0bc12",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:12:41"
+    },
+    {
+      "id": "9fe34073-6bfc-4a12-8954-40f203185c9e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "44ad4541-e5fa-4470-8f07-426deef703e2",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:12:42"
+    },
+    {
+      "id": "e570b32c-c2e4-49f0-97c3-30e2ee1aed08",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-21 13:13:45"
+    },
+    {
+      "id": "93ce8781-29c9-4174-9d8f-d2c3af3cf13b",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-21 13:19:26"
+    },
+    {
+      "id": "7e4e67af-bfee-4d83-bf7d-9f15bf79a9e4",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 13:19:43"
+    },
+    {
+      "id": "0f0dc471-b017-4b94-a518-f9679913caab",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "8fe960a8-0e21-40b3-b941-f4c6927a1633",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:20:35"
+    },
+    {
+      "id": "4023b96b-a8c4-49ce-a410-bb73d22da3a6",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b4197a65-0067-48bf-ab8c-798777f90628",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:20:35"
+    },
+    {
+      "id": "47a63a11-a245-46b2-95ec-8b6c1c22913d",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "8fe960a8-0e21-40b3-b941-f4c6927a1633",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 5a478bee46e88-3142a20b1f3sm46296382eec.26 - gsmtp",
+      "created_at": "2026-07-21 13:20:37"
+    },
+    {
+      "id": "c3c267ca-52cd-48a7-b8bd-42f5f5527efe",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b4197a65-0067-48bf-ab8c-798777f90628",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials a92af1059eb24-13ce29c2dcdsm44184649c88.1 - gsmtp",
+      "created_at": "2026-07-21 13:20:37"
+    },
+    {
+      "id": "529157c9-0efb-47cb-9d53-d9d4356fa704",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-21 13:21:02"
+    },
+    {
+      "id": "e8a6fcf4-281b-42a7-b7c4-2085ad9f96b4",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-21 13:22:25"
+    },
+    {
+      "id": "1fb4cae4-aa97-48ac-b9f0-4e0635d43929",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 13:22:51"
+    },
+    {
+      "id": "4db57f11-dc18-4a5c-a646-ae6530d36b82",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f7ce2d88-eb81-4d70-924a-5b3183dfd1f4",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:23:52"
+    },
+    {
+      "id": "a505f1f4-55a6-4efd-88d1-c3cc501ebf9f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "516b8a3d-d7cc-4e4f-98c6-b20375f90104",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:23:52"
+    },
+    {
+      "id": "ca17786c-4304-44fe-889b-af0405aa1d2b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2196ec84-b2a9-43ba-aee1-6a9ba3053a45",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:23:53"
+    },
+    {
+      "id": "955164a8-75b9-421e-a6ba-493448e928f2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "0b4592f0-6ccb-42ab-b2b2-19ca6f983d3f",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 13:23:53"
+    },
+    {
+      "id": "b9ea129a-09c8-4855-920c-dd327a9c2cd2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "516b8a3d-d7cc-4e4f-98c6-b20375f90104",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 5a478bee46e88-3142a210571sm48605397eec.31 - gsmtp",
+      "created_at": "2026-07-21 13:23:54"
+    },
+    {
+      "id": "60295cac-ac9e-41d6-9f43-e4c0f73d7550",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f7ce2d88-eb81-4d70-924a-5b3183dfd1f4",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 5a478bee46e88-3142a1ddeb6sm53612637eec.20 - gsmtp",
+      "created_at": "2026-07-21 13:23:54"
+    },
+    {
+      "id": "28e8040b-6091-4f7e-a6c2-c2979c1aad6f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2196ec84-b2a9-43ba-aee1-6a9ba3053a45",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 5a478bee46e88-3142a1ddeb6sm53612773eec.20 - gsmtp",
+      "created_at": "2026-07-21 13:23:55"
+    },
+    {
+      "id": "67468d2d-4fe7-452a-aa30-a4e2df942aaf",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "0b4592f0-6ccb-42ab-b2b2-19ca6f983d3f",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials a92af1059eb24-13ce2900a37sm38802487c88.0 - gsmtp",
+      "created_at": "2026-07-21 13:23:55"
+    },
+    {
+      "id": "fd9a86ce-9e42-42ad-aa32-bce7144a8ba5",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-21 13:24:14"
+    },
+    {
+      "id": "bcde3217-44c8-4ab7-8c68-8aa069008174",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 13:24:53"
+    },
+    {
+      "id": "cedf53c1-5ad0-458f-8075-f105b3767a1f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 13:25:56"
+    },
+    {
+      "id": "6b045ba6-d447-4619-a335-08dd7af1bace",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 13:26:58"
+    },
+    {
+      "id": "42fe26fb-a9cb-47d9-822f-760824eba4d1",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-21 13:29:00"
+    },
+    {
+      "id": "61ebd997-eb87-418a-b45e-10a6c8a84165",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-21 13:31:08"
+    },
+    {
+      "id": "05e3d19a-c48f-4f8e-88ef-a7021fb4c93a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 13:42:23"
+    },
+    {
+      "id": "610b886a-e27e-43eb-a0c0-9223728ccd06",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 14:06:07"
+    },
+    {
+      "id": "98f41a1d-d466-4e34-9d4b-d9a4734e0b4b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "900f270a-a090-46eb-8bff-571feae05066",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 14:07:59"
+    },
+    {
+      "id": "7961468d-dbc1-4acd-998d-32a8deab069d",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "900f270a-a090-46eb-8bff-571feae05066",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-21 14:07:59"
+    },
+    {
+      "id": "87f1c68b-f62b-4a6c-8cdc-001566be3ed8",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "16645e7d-c241-4715-9883-00820cb798cc",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 14:07:59"
+    },
+    {
+      "id": "92337bb1-1926-4f47-a094-f34a54c6a4f0",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "16645e7d-c241-4715-9883-00820cb798cc",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-21 14:07:59"
+    },
+    {
+      "id": "ad8e7292-84e2-4b12-bb0d-0e0234a54fbf",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "669bcf7e-ec57-4df5-b159-2d146776afa9",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-21 14:07:59"
+    },
+    {
+      "id": "ab0b2bd2-76e3-44d1-b225-6dedd93e16d1",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "669bcf7e-ec57-4df5-b159-2d146776afa9",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-21 14:07:59"
+    },
+    {
+      "id": "b15d6912-2990-4469-a2ad-dea023cf35fd",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-21 14:11:09"
+    },
+    {
+      "id": "d314f3b1-bad2-4c96-9b23-ba7abb5d8f50",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 04:48:32"
+    },
+    {
+      "id": "e8d84fce-eded-4818-b1d3-8a934fcba642",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2f222830-718b-46a8-b19a-d65dff2fcd2b",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 04:49:40"
+    },
+    {
+      "id": "4fb48148-978e-4f6c-86ad-2bb0f7ae1d03",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2f222830-718b-46a8-b19a-d65dff2fcd2b",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 04:49:40"
+    },
+    {
+      "id": "b1649a8f-0e93-428c-8c62-d842ec276d5c",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "bf15f4de-b4dd-48b8-bfb2-3712d516042c",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 04:49:40"
+    },
+    {
+      "id": "7b01ecb9-e77e-4085-80e9-3115e2d7561e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "bf15f4de-b4dd-48b8-bfb2-3712d516042c",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 04:49:40"
+    },
+    {
+      "id": "197fbd1a-ed01-45cd-bd61-e20ab427c5ae",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 04:51:40"
+    },
+    {
+      "id": "713743f7-4c25-4bfc-916d-f365807a96e0",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "252b67db-9a48-4afd-9d7a-e77d48de243f",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "655bdcf4-20f3-4668-936d-0e46e34585cd",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "252b67db-9a48-4afd-9d7a-e77d48de243f",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "9e510bbf-2f05-4046-8b1f-564a0a0d7b3c",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "9b659deb-dae1-4dfb-b056-8ad6a34cbf9a",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "8dbdff9c-e1d7-45b9-8ff6-0d3bf31f2254",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "9b659deb-dae1-4dfb-b056-8ad6a34cbf9a",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "4b3446f3-4a3c-4204-b82b-3dc25106e7c3",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5b214495-7414-4037-9534-0df5edce1f0a",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "c925c496-39ad-4c6e-9b59-c274a8403a86",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5b214495-7414-4037-9534-0df5edce1f0a",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "f8a87c8f-b7cb-45c1-a54f-c6251077b6d9",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c14258d0-f5ac-4e5b-a648-941143cd5008",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "2d22a1e8-3f48-4159-9bd5-66168ee815ca",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c14258d0-f5ac-4e5b-a648-941143cd5008",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 04:54:23"
+    },
+    {
+      "id": "f3ed8f68-4419-4b8b-99b0-0165629e5890",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "7dca1fc4-9108-4c67-b549-b44e95fa1145",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 04:54:30"
+    },
+    {
+      "id": "7b582c5e-683b-4255-ac39-9032aadad255",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "7dca1fc4-9108-4c67-b549-b44e95fa1145",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 04:54:30"
+    },
+    {
+      "id": "4129f1ef-6509-4ec1-b4d7-4cacd9b03f21",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "55041726-c11a-4974-aa92-2eca18cba77c",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "94b331ee-d62a-48ba-bd5f-91a11d2c5146",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "55041726-c11a-4974-aa92-2eca18cba77c",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "4c834a60-a5b4-4fa9-8759-053e219b5cca",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "995a8413-e342-4156-8c82-f054727260ae",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "a69c2716-3c75-4b5d-a62c-9bd8a22e8d94",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "995a8413-e342-4156-8c82-f054727260ae",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "64af5e5b-4db0-40c2-974a-7e9274bd4ab0",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "1909fbcd-9c2d-441b-a174-584aeaba5fa1",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "151db2b0-ba4d-49f6-a290-a9546b68b020",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "1909fbcd-9c2d-441b-a174-584aeaba5fa1",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "2aed1684-cac2-41fd-9a4b-f3125fbc60ae",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "470f60ac-14e9-4eb2-a69e-599da56fa8ae",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "7672fbea-1d92-49cd-bf8d-9a232621e500",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "470f60ac-14e9-4eb2-a69e-599da56fa8ae",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:21:45"
+    },
+    {
+      "id": "e8607400-52e2-4a3a-bd26-3588d065de8c",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 05:22:12"
+    },
+    {
+      "id": "20e9316a-3b10-4988-8d27-2cf6cc58a6c5",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 05:23:40"
+    },
+    {
+      "id": "6d9a66d1-00b0-4f25-a05b-950d1b9f5650",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 05:38:35"
+    },
+    {
+      "id": "b1603fde-9bb4-41a7-9887-5158c0a05456",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f7b27b50-b066-431c-a9d5-0aa27d7c8e8b",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "63aa67f5-1a8a-4301-8666-b0e0bc705488",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f7b27b50-b066-431c-a9d5-0aa27d7c8e8b",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "4db27480-bf84-4b8c-82d3-3af39afb3da7",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "9941d56b-7518-4916-82be-2db2f9588f55",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "f5eaad92-0044-4318-94cb-5d8c19cdf02b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "9941d56b-7518-4916-82be-2db2f9588f55",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "63b7f84c-79b3-49f8-91d2-a0bc259b074a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "45501e23-85b4-4125-95d2-ffe97b59c082",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "8b7fe18f-355e-4e41-93ce-82756b3a6288",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "45501e23-85b4-4125-95d2-ffe97b59c082",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "d7082981-4f9a-4de7-83db-0adc5fa00a93",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "a9f0a9a6-d797-49ff-8503-3efb65ed4975",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "2c7812c3-58fa-4266-bdca-230951c9b2df",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "a9f0a9a6-d797-49ff-8503-3efb65ed4975",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:39:35"
+    },
+    {
+      "id": "43a29b4c-cacf-4502-b72e-fc4b0c1d5d8f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "680f205b-9c34-4439-bbe8-62c01ad38cd7",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 05:39:54"
+    },
+    {
+      "id": "7083ae85-e156-4bb1-9245-41e378479f0a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "680f205b-9c34-4439-bbe8-62c01ad38cd7",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 05:39:54"
+    },
+    {
+      "id": "fc75939b-6115-49aa-a410-4be071cd6bdd",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 05:40:11"
+    },
+    {
+      "id": "f49ef6ff-a4c1-4a13-8503-94faf425fe40",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 05:41:00"
+    },
+    {
+      "id": "57f9c451-8701-4a12-8b08-ee8bf8ce50ad",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 05:58:03"
+    },
+    {
+      "id": "0eec5878-fe92-40ab-8fa9-aade495b94c3",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 06:10:23"
+    },
+    {
+      "id": "98619197-b665-49bd-b046-c224a81c0df5",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 06:10:36"
+    },
+    {
+      "id": "ee7132b9-94f0-405b-8d3b-b4d261d8967b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "10ec2aa2-2199-4a7b-a9d4-4d23e7cd1f20",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "3dd33b96-d3c1-4e64-b075-2ed66c037ac3",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "10ec2aa2-2199-4a7b-a9d4-4d23e7cd1f20",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "7ee77a25-530a-4124-808d-c1c3ee037bd2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f3ab275d-d881-4647-ae33-4ca635912c1d",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "602463c2-f27b-46fe-a0a1-b42881736065",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f3ab275d-d881-4647-ae33-4ca635912c1d",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "86403073-7243-41ee-b7c2-4b5861eddc40",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "46324f0a-3c68-408a-b4d2-50b353d3d786",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "9fa72547-877a-4a24-8053-aaa9a8cc2bd4",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "46324f0a-3c68-408a-b4d2-50b353d3d786",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "374111bf-0062-4d62-abd0-e974f82b9735",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "707d910a-ebce-49b4-b544-16fe3592c9c9",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "53803ebf-05e6-4d90-9c11-d16e3778f823",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "707d910a-ebce-49b4-b544-16fe3592c9c9",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 06:11:31"
+    },
+    {
+      "id": "45123d42-7dbd-4d32-9245-ab9f0afee1f9",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "fd83c9ce-138a-47f1-8d9b-43e2f957ccd6",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 06:11:42"
+    },
+    {
+      "id": "f0bd0b20-2783-41b9-b60d-cdb020340336",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "fd83c9ce-138a-47f1-8d9b-43e2f957ccd6",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 06:11:42"
+    },
+    {
+      "id": "1b6a309f-1735-4205-a120-145d03fbb432",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 06:12:31"
+    },
+    {
+      "id": "f062e6ca-5565-414c-8674-49e392b07ec2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 06:27:49"
+    },
+    {
+      "id": "dfc5ae0c-b6b5-4639-9e01-4739363a7217",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:13:37"
+    },
+    {
+      "id": "27de499b-209f-45a5-a658-ca0acc647f16",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:13:42"
+    },
+    {
+      "id": "6c3ffaaa-fdd2-4859-869a-567f04d9acc6",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "CONTACT_ADDED",
+      "details": "Contact added: Mom (+919876543210)",
+      "created_at": "2026-07-28 17:13:42"
+    },
+    {
+      "id": "008795c0-c344-40ad-a261-144bb893f553",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:13:47"
+    },
+    {
+      "id": "dba3ef49-7e16-4ab8-9541-d21453857a67",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "CONTACT_DELETED",
+      "details": "Contact deleted: Mom",
+      "created_at": "2026-07-28 17:13:47"
+    },
+    {
+      "id": "f97b04af-b0b9-4719-9768-0bb8210bae8b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:14:07"
+    },
+    {
+      "id": "c985a426-af94-43ef-a0e1-050a69b11b88",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "CONTACT_ADDED",
+      "details": "Contact added: BRAGATHEESH V (08807984687)",
+      "created_at": "2026-07-28 17:14:22"
+    },
+    {
+      "id": "2118eed5-5beb-4f98-b659-e875047988d3",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "CONTACT_ADDED",
+      "details": "Contact added: BRAGATHEESH  (8248901486)",
+      "created_at": "2026-07-28 17:14:46"
+    },
+    {
+      "id": "5f740b8a-8783-4ae0-b2c9-2e2359abcc7a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:24:56"
+    },
+    {
+      "id": "976934a0-7ca6-4aac-8ff0-7d55bd4dfe5c",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:25:32"
+    },
+    {
+      "id": "235f780b-a889-41bb-9ef0-814ea20f7b56",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "33658a10-796a-4017-abfa-752347c70ea6",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "6a6cbfec-65d6-4cbe-b8ce-2ca481672895",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "33658a10-796a-4017-abfa-752347c70ea6",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "8cc8ab0a-a938-4d3d-b26b-885983902a45",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "33658a10-796a-4017-abfa-752347c70ea6",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "01569dbf-a604-4c12-b326-20fa635cbddf",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "33658a10-796a-4017-abfa-752347c70ea6",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "46e4454b-8974-45b6-a254-3945399b060a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2b8509a2-bb52-4052-8aaf-436038ea3294",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "cc78d689-db06-4343-b8e1-be7f2b604233",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2b8509a2-bb52-4052-8aaf-436038ea3294",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "d13ed385-44ec-4dc4-bce5-927d01c8d19f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2b8509a2-bb52-4052-8aaf-436038ea3294",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "157287d1-d07d-4ffe-8101-882e48b610ca",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2b8509a2-bb52-4052-8aaf-436038ea3294",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "df9f7d35-f14f-4105-934e-cb33ef038091",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "4a874733-9a9e-4572-9363-a19e414447e9",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "953d80e6-c03b-4180-a2a8-f14cc09c8082",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "4a874733-9a9e-4572-9363-a19e414447e9",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "dcbed14e-d841-4f3f-a654-da4a18f1d9c7",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "4a874733-9a9e-4572-9363-a19e414447e9",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "47ff7c41-302d-4d7a-8f3f-adc384c23cd3",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "4a874733-9a9e-4572-9363-a19e414447e9",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "e3d9e14b-291f-424f-8666-9620554cd5b4",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "88407235-7d37-4451-af5d-6f02fbc80b45",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "a0e01e7b-f495-4d7e-905c-cee1e90cc361",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "88407235-7d37-4451-af5d-6f02fbc80b45",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "f2a7c250-7b7c-42a2-8411-3978b1cb635e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "88407235-7d37-4451-af5d-6f02fbc80b45",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "baca6616-6910-4fef-ab31-46c267c68794",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "88407235-7d37-4451-af5d-6f02fbc80b45",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:26:14"
+    },
+    {
+      "id": "d0641c68-4e45-4dd2-8b62-eb5058668865",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 17:26:23"
+    },
+    {
+      "id": "2cc22ca0-e465-4c87-8713-6c008511e213",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:27:10"
+    },
+    {
+      "id": "9a04e4a5-ce01-4ed7-a1b7-65d32670558f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:29:39"
+    },
+    {
+      "id": "92b2b727-b9e9-48f2-a6d2-24703f936c0d",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:30:14"
+    },
+    {
+      "id": "4607358d-d2d3-4df4-986e-f4e29fc1fb86",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:30:20"
+    },
+    {
+      "id": "ede6a8e1-d2d8-4e6d-a0f4-3da572b22e1f",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 17:30:32"
+    },
+    {
+      "id": "6ff37fb5-8c19-4adc-b053-77ec8fe4b987",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 17:30:37"
+    },
+    {
+      "id": "b55805da-20b3-4b6d-a5f5-ebf038dfdccb",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 17:32:12"
+    },
+    {
+      "id": "9f6846e2-ab46-4300-b81e-af1e26f0eaee",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:32:20"
+    },
+    {
+      "id": "912cb589-c3da-4a2f-953e-ef4d82af455c",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:39:25"
+    },
+    {
+      "id": "4b3f3d46-26d4-4eed-96e0-d7faa06f33c4",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:41:14"
+    },
+    {
+      "id": "c094b767-8091-4ed0-8ed9-f9067bd30d83",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 17:43:08"
+    },
+    {
+      "id": "bc368841-0866-4940-97c6-cecd7154badc",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6e213943-36a6-40c7-96cf-13f1ab475c60",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:19"
+    },
+    {
+      "id": "31a187df-e7d7-4455-a543-f93d324550e2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6e213943-36a6-40c7-96cf-13f1ab475c60",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:19"
+    },
+    {
+      "id": "351fd65b-6764-43c8-9b05-a462ec04db6b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6e213943-36a6-40c7-96cf-13f1ab475c60",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:19"
+    },
+    {
+      "id": "df1c29b4-6e44-4570-9920-9aa0b04907b4",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6e213943-36a6-40c7-96cf-13f1ab475c60",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:19"
+    },
+    {
+      "id": "bee3ab31-a515-4167-bc50-3a51050770e2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "177064c6-9847-47c1-bf7f-adba901ce855",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:20"
+    },
+    {
+      "id": "77ba0178-1662-4168-bf33-72e3adb919e8",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "177064c6-9847-47c1-bf7f-adba901ce855",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:20"
+    },
+    {
+      "id": "f688cf2d-3845-4b09-87ac-9c81a8ceacff",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "177064c6-9847-47c1-bf7f-adba901ce855",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:20"
+    },
+    {
+      "id": "3a0af264-8ed7-4719-bdaf-9db1b2f79cde",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "177064c6-9847-47c1-bf7f-adba901ce855",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:20"
+    },
+    {
+      "id": "5547692e-9fdb-4e76-a8e4-6686f59542dc",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ddedfef6-33f6-4cd9-82f2-2889191edb0b",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "85e9220a-aeb2-4cce-a293-ce30efa2da0a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ddedfef6-33f6-4cd9-82f2-2889191edb0b",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "4587fde4-0b5e-435e-8c15-f4d2db282242",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ddedfef6-33f6-4cd9-82f2-2889191edb0b",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "4231e9ca-d672-4cfe-9120-b9f45b7607bf",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ddedfef6-33f6-4cd9-82f2-2889191edb0b",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "6e013c71-6c8a-43b6-9584-34712cd01870",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "3bb18a1f-0f73-4be1-8a29-3f066beb0fb1",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "16496aed-70dc-4795-a8a8-cd419a393734",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "3bb18a1f-0f73-4be1-8a29-3f066beb0fb1",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "04b0c14c-4c39-4559-bc0f-0cf5580836f4",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "3bb18a1f-0f73-4be1-8a29-3f066beb0fb1",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "07f02ffa-162c-4c38-8a6b-4ee8b9cd2c4f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "3bb18a1f-0f73-4be1-8a29-3f066beb0fb1",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "9a697e34-6aa3-4212-9bcd-51cb967479f1",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "02a3f293-d3c6-41ec-815d-a5a91e0dea08",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "5983d35d-cff3-43a0-9c30-8cb3294c05d8",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "02a3f293-d3c6-41ec-815d-a5a91e0dea08",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "f5e29aeb-8b2d-455f-98b3-2642304022eb",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "02a3f293-d3c6-41ec-815d-a5a91e0dea08",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "42562178-32c4-4100-82be-e8fdaf6b82bc",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "02a3f293-d3c6-41ec-815d-a5a91e0dea08",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:27"
+    },
+    {
+      "id": "d34a81ae-3b3e-4682-a1b8-788ba7f80960",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5c68b898-e67d-4f04-98c3-abca74caefa8",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "412fc1de-1909-486f-a9e4-00d881dafde4",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5c68b898-e67d-4f04-98c3-abca74caefa8",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "86249625-e2ed-4b80-b599-3019c4021797",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5c68b898-e67d-4f04-98c3-abca74caefa8",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "b3981ce8-3ca7-4537-96ef-905d30f6ea53",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5c68b898-e67d-4f04-98c3-abca74caefa8",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "cba7063b-8b79-484b-a5ec-a9f1ca1d9d61",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "d85cb4f0-3e85-4d58-bd01-768edab8ef9b",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "3fc5cab6-e66f-41b0-a3bd-52dbd0461d9f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "d85cb4f0-3e85-4d58-bd01-768edab8ef9b",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "e18d291f-a8df-4357-bcbc-a47e79edb6e2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "d85cb4f0-3e85-4d58-bd01-768edab8ef9b",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "4e3a0118-000a-4c07-aa10-3025f763784d",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "d85cb4f0-3e85-4d58-bd01-768edab8ef9b",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "647f4e9e-5691-4abd-8150-6190a30e1b5f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2cfa838-36d7-4a99-9071-b82fe7e02637",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "5abb3cb3-74e0-4be1-8b67-70c2fb1f642f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2cfa838-36d7-4a99-9071-b82fe7e02637",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "6c8fe995-03e6-49c3-9db6-cf9135263444",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2cfa838-36d7-4a99-9071-b82fe7e02637",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "62a8684d-a6b3-449d-b074-6d469508b241",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2cfa838-36d7-4a99-9071-b82fe7e02637",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "b7aadefe-2f46-460f-884e-b7d081f97144",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "93dd36a4-cd34-4c81-b6e9-dec46a2b9189",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "af6aa697-f4ed-4923-a76e-734136d602be",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "93dd36a4-cd34-4c81-b6e9-dec46a2b9189",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "bfb1be52-2ba2-494b-9182-c6559d241305",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "93dd36a4-cd34-4c81-b6e9-dec46a2b9189",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "9c37aa69-9bd7-4d9d-96cc-869623cc65a7",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "93dd36a4-cd34-4c81-b6e9-dec46a2b9189",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "82b8bfa6-4a59-4886-b064-e7d24f2e6b4d",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2d92ea3-5c0c-4ca7-8161-c5e702496753",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "2abe585f-f441-40db-999d-2247af50c4f8",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2d92ea3-5c0c-4ca7-8161-c5e702496753",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "7b0a79e6-866e-4b41-a612-51262e4506a7",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2d92ea3-5c0c-4ca7-8161-c5e702496753",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "aa02e610-97b9-4280-9f11-2e1e1c24ec47",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "b2d92ea3-5c0c-4ca7-8161-c5e702496753",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "59fc57b5-32ee-4baf-8b72-6895713addf8",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "72f4ef34-d856-447e-9f20-4950bf6ae402",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "f605fdaa-0f4d-4a67-9e5c-19281a58358a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "72f4ef34-d856-447e-9f20-4950bf6ae402",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "a1bd4c46-e7c4-4b49-999c-955c73989d7b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "72f4ef34-d856-447e-9f20-4950bf6ae402",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "4f417b37-54ff-4966-bbea-82a687fe9ac0",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "72f4ef34-d856-447e-9f20-4950bf6ae402",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "aa75e576-5100-4152-a111-61ed86176aae",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f5e57089-264a-4f71-8732-3e54f0d0e66e",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "76cf82f3-25de-49c1-bc8a-f0bc86efa94a",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f5e57089-264a-4f71-8732-3e54f0d0e66e",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "46d20eb7-95d3-46eb-b9ec-0c1d479e166c",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f5e57089-264a-4f71-8732-3e54f0d0e66e",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "7a308fc7-31b7-4e15-afc2-3dc55f6a1176",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f5e57089-264a-4f71-8732-3e54f0d0e66e",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "37eeaff5-1325-4742-8d1e-918f6224a763",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5649dfa2-c62a-46dd-8ddf-2ff1a9ad038a",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "1020ec38-4871-4b94-a144-91e0897aefb6",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5649dfa2-c62a-46dd-8ddf-2ff1a9ad038a",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "c1c587d3-9af6-4c6c-b23f-86241ff95ea9",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5649dfa2-c62a-46dd-8ddf-2ff1a9ad038a",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "1fefbcad-2e6f-47bc-bfb2-01fc71624a63",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "5649dfa2-c62a-46dd-8ddf-2ff1a9ad038a",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "3717b99a-1049-47e9-b81e-4009593bd323",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c0079851-b2f2-4ebf-b5d3-cbbf6919e5d0",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "9b9ac0ce-5f12-4e4f-b358-6a9947446c8f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c0079851-b2f2-4ebf-b5d3-cbbf6919e5d0",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "34d533a4-fa56-4058-8072-c719cfdd911d",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c0079851-b2f2-4ebf-b5d3-cbbf6919e5d0",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "5882d351-6492-4d0f-ba58-29117940c173",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c0079851-b2f2-4ebf-b5d3-cbbf6919e5d0",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:28"
+    },
+    {
+      "id": "06f3c2b9-1b16-4911-a2da-dacba0bf5e92",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c1d917f9-a909-4a33-b952-e6ec07c53125",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "e365a597-466e-4214-91c2-103dcd6704e6",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c1d917f9-a909-4a33-b952-e6ec07c53125",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "f7d75a82-7c03-4b5e-bf00-b31b0a1262fe",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c1d917f9-a909-4a33-b952-e6ec07c53125",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "e5744af4-4c8a-4b27-9130-05da1bb2e345",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "c1d917f9-a909-4a33-b952-e6ec07c53125",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "0f14daec-52de-4c49-8b8d-194e8adda23d",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "91bd31aa-9df9-4bc4-99c7-adffa93a54d0",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "45069f9e-08ee-49d7-8416-eb1500607d5f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "91bd31aa-9df9-4bc4-99c7-adffa93a54d0",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "479f6798-66d2-44cd-adb5-ca0e144b77db",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "91bd31aa-9df9-4bc4-99c7-adffa93a54d0",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "139231d0-a722-4b66-99d6-8f52690d2d9c",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "91bd31aa-9df9-4bc4-99c7-adffa93a54d0",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "72539621-263a-46f9-b6ce-3bee154fa676",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6c2f7242-64e0-4731-b208-003f39f455a2",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "ac298b49-3583-4407-927e-7815fec8ece5",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6c2f7242-64e0-4731-b208-003f39f455a2",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "27edf04c-1154-47ce-8320-77578771f4ba",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6c2f7242-64e0-4731-b208-003f39f455a2",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "edca49a7-c333-439b-8cd3-5325a299f3a5",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "6c2f7242-64e0-4731-b208-003f39f455a2",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:45:48"
+    },
+    {
+      "id": "3b3cd3a4-5b1e-4d01-a4ca-8fe3b3251d81",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f358ff7e-77da-489b-a381-94fd280a3ff2",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "cbc4f304-c7ec-4596-898b-d0ce2345355e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f358ff7e-77da-489b-a381-94fd280a3ff2",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "23fd40fa-a756-4ba3-84c8-24c6e020399e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f358ff7e-77da-489b-a381-94fd280a3ff2",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "7b8ea6e1-3029-4ca0-9416-8e1fe76a68fb",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "f358ff7e-77da-489b-a381-94fd280a3ff2",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "c14fff24-b64a-4d3f-9a63-505450115787",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ffdf33af-78d2-4a34-8208-3f5eaa0cc6f5",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "4a1bf4cd-8332-4f50-919a-b601253255c6",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ffdf33af-78d2-4a34-8208-3f5eaa0cc6f5",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "42d227d2-dd36-4c99-aec2-a22e8e13ae39",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ffdf33af-78d2-4a34-8208-3f5eaa0cc6f5",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "96ddaa67-1077-4565-a1f9-9d50a52c0855",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "ffdf33af-78d2-4a34-8208-3f5eaa0cc6f5",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "80c3a609-368d-4385-af2b-d14262c6c2e6",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2f6cdfcc-ab44-421f-b134-cf95be40fa64",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "c21e66a6-7e79-4e03-9585-17761d18be43",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2f6cdfcc-ab44-421f-b134-cf95be40fa64",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "8989e125-f7e2-488b-a62e-f9ea217bdfe2",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2f6cdfcc-ab44-421f-b134-cf95be40fa64",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "f44cda71-21fa-4dc0-abc2-0fccae871389",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "2f6cdfcc-ab44-421f-b134-cf95be40fa64",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 17:46:03"
+    },
+    {
+      "id": "f2c1d70a-5010-4d2c-87bf-181c63d876eb",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 18:03:59"
+    },
+    {
+      "id": "ee4f1400-7369-4508-9f9e-b86b5c25dac3",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 18:12:27"
+    },
+    {
+      "id": "5307fd9d-3977-4d64-bcea-ab3e993d41c6",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 18:12:32"
+    },
+    {
+      "id": "af5b8853-45bc-4848-bebf-7279e0287cad",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 18:31:13"
+    },
+    {
+      "id": "cc55b6c0-ca2f-4d7a-baf7-8948a88eb3f1",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "e5646e8c-82a9-4c24-b303-7a933d97cd7e",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "4f76da19-c635-4ce9-943c-578615c31ede",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "e5646e8c-82a9-4c24-b303-7a933d97cd7e",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "697efe57-3d7f-4c9b-b259-ecd581db80cf",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "e5646e8c-82a9-4c24-b303-7a933d97cd7e",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "ba524ee7-b0fc-46cc-bca8-07d8fec559a3",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "e5646e8c-82a9-4c24-b303-7a933d97cd7e",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "3886d350-fc1c-4472-9720-c229e618f3cb",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "cef19d64-6832-4fa5-a5bc-fb9a80de3e47",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "a1ad2f08-b668-4985-8d42-b50571b32811",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "cef19d64-6832-4fa5-a5bc-fb9a80de3e47",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "c587a8ab-5316-40d6-ace2-e6bf1064571e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "cef19d64-6832-4fa5-a5bc-fb9a80de3e47",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "8654fffa-fa13-4717-8e7a-4bb8feb86334",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "cef19d64-6832-4fa5-a5bc-fb9a80de3e47",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "d8edb06e-868a-4d4a-b423-e79ad4dbb8ba",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "848a9041-c7b7-4bb9-9e83-05f37686fdcd",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "7f4d6196-e0eb-41dd-875b-228321e76f11",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "848a9041-c7b7-4bb9-9e83-05f37686fdcd",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "e3bc7a65-ddd7-4773-9d20-14a1a1b41c3f",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "848a9041-c7b7-4bb9-9e83-05f37686fdcd",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "5833af7e-8525-4696-bb53-00ef2d4f3fc8",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "848a9041-c7b7-4bb9-9e83-05f37686fdcd",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "8e270d8c-8de8-41a8-84cc-f083667bbee1",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "04d074d7-e21e-4526-a90e-a36d4203f0e4",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "f4cd4a9b-830a-4cee-a03b-2d7f453eb546",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "04d074d7-e21e-4526-a90e-a36d4203f0e4",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "c34a69d0-dd19-4a1e-aa6f-0e6acf847819",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "04d074d7-e21e-4526-a90e-a36d4203f0e4",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "2c1d4b85-c629-43d8-a7be-8fa47af455e1",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "04d074d7-e21e-4526-a90e-a36d4203f0e4",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "a567a6aa-63ad-4e90-aa20-11c70ad84983",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "aad3e694-d249-49da-bbe7-76f8a9ababea",
+      "Action": "SOS_CREATED",
+      "details": "SOS alert created by user user@guardian.com",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "e6d22805-b787-4b19-8243-c913d0062baf",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "aad3e694-d249-49da-bbe7-76f8a9ababea",
+      "Action": "EMAIL_FAILED",
+      "details": "Failed to send SOS email: Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "234a8849-246e-4bb1-bc0f-f81ae3f6803e",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "aad3e694-d249-49da-bbe7-76f8a9ababea",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH V - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "3934eff1-602c-442d-9624-5d5fd14ff39b",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": "aad3e694-d249-49da-bbe7-76f8a9ababea",
+      "Action": "CONTACT_EMAIL_FAILED",
+      "details": "Failed to send SOS to contact: BRAGATHEESH  - Email not configured",
+      "created_at": "2026-07-28 18:37:01"
+    },
+    {
+      "id": "f6d030b1-66f3-44c0-8133-aecfaed2311f",
+      "user_id": "924bad49-fe37-49d3-89a3-b7084af11023",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: police@guardian.com (Role: police)",
+      "created_at": "2026-07-28 18:38:02"
+    },
+    {
+      "id": "13bbd1b3-c33b-49df-8249-b6d302b711bf",
+      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
+      "case_id": null,
+      "Action": "USER_LOGIN",
+      "details": "User logged in: user@guardian.com (Role: user)",
+      "created_at": "2026-07-28 18:39:18"
+    }
+  ]
+}

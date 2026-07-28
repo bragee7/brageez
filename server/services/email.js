@@ -1,0 +1,167 @@
+const nodemailer = require('nodemailer');
+const path = require('path');
+const fs = require('fs');
+const config = require('../config');
+
+const LOGO_PATH = path.join(__dirname, '../../logo.jpeg');
+
+const initTransporter = () => {
+  if (!config.email.user || !config.email.pass) {
+    console.warn('⚠️ Email not configured - cannot create transporter');
+    return null;
+  }
+
+  const cleanPass = config.email.pass.replace(/\s/g, '');
+
+  console.log(`📧 Creating transporter for: ${config.email.user} via ${config.email.host}:${config.email.port}`);
+
+  return nodemailer.createTransport({
+    host: config.email.host,
+    port: config.email.port,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: config.email.user,
+      pass: cleanPass
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+};
+
+const isEmailConfigured = () => {
+  return !!(config.email.user && config.email.pass);
+};
+
+const sendOTPEmail = async (email, name, otp) => {
+  const transporter = initTransporter();
+  if (!transporter) {
+    return { success: false, error: 'Email not configured' };
+  }
+
+  try {
+    const mailOptions = {
+      from: config.email.user,
+      to: email,
+      subject: 'Women Safety Guardian - Email Verification',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #dc2626;">Women Safety Guardian</h2>
+          <p>Hello ${name},</p>
+          <p>Thank you for registering. Please verify your email with the OTP below:</p>
+          <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #dc2626;">${otp}</span>
+          </div>
+          <p>This OTP expires in 5 minutes.</p>
+          <p>If you didn't register, please ignore this email.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 OTP email sent to ${email}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Email send error:', error.message);
+    return { success: false, error: error.message };
+  }
+};
+
+const sendSOSAlert = async (caseData, videoPath, audioPath) => {
+  const transporter = initTransporter();
+  if (!transporter) {
+    console.log('📧 Email not configured - SOS alert skipped');
+    return { success: false, error: 'Email not configured' };
+  }
+
+  try {
+    const attachments = [];
+    if (videoPath && fs.existsSync(videoPath)) {
+      attachments.push({ filename: 'emergency-video.webm', path: videoPath });
+    }
+    if (audioPath && fs.existsSync(audioPath)) {
+      attachments.push({ filename: 'emergency-audio.webm', path: audioPath });
+    }
+
+    const mailOptions = {
+      from: config.email.user,
+      to: config.email.policeEmail,
+      subject: `🚨 SOS ALERT - Emergency from ${caseData.user_email}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #dc2626;">🚨 SOS EMERGENCY ALERT</h2>
+          <p><strong>User:</strong> ${caseData.user_email}</p>
+          <p><strong>Status:</strong> ${caseData.status}</p>
+          <p><strong>Time:</strong> ${caseData.created_at}</p>
+          ${caseData.location_link ? `<p><strong>Location:</strong> <a href="${caseData.location_link}">View on Google Maps</a></p>` : ''}
+          ${caseData.notes ? `<p><strong>Notes:</strong> ${caseData.notes}</p>` : ''}
+          <p style="color: #dc2626; font-weight: bold;">Immediate response required.</p>
+        </div>
+      `,
+      attachments
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log(`📧 SOS alert email sent to police`);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('SOS email error:', error.message);
+    return { success: false, error: error.message };
+  }
+};
+
+const sendContactSOSAlert = async (caseData, contact) => {
+  const transporter = initTransporter();
+  if (!transporter) {
+    return { success: false, error: 'Email not configured' };
+  }
+
+  try {
+    const mailOptions = {
+      from: config.email.user,
+      to: contact.email,
+      subject: `🚨 SOS EMERGENCY - ${caseData.user_email} needs help!`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #dc2626;">🚨 SOS EMERGENCY ALERT</h2>
+          <p>Hello <strong>${contact.name}</strong>,</p>
+          <p><strong>${caseData.user_email}</strong> has triggered an emergency SOS alert.</p>
+          ${caseData.location_link ? `<p><strong>Location:</strong> <a href="${caseData.location_link}">View on Google Maps</a></p>` : ''}
+          ${caseData.notes ? `<p><strong>Details:</strong> ${caseData.notes}</p>` : ''}
+          <p><strong>Time:</strong> ${caseData.created_at}</p>
+          <hr>
+          <p style="color: #dc2626; font-weight: bold;">Please check on them immediately.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 SOS alert sent to contact: ${contact.email}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Contact email error:', error.message);
+    return { success: false, error: error.message };
+  }
+};
+
+const sendTestEmail = async () => {
+  const transporter = initTransporter();
+  if (!transporter) {
+    return { success: false, error: 'Email not configured' };
+  }
+
+  try {
+    await transporter.sendMail({
+      from: config.email.user,
+      to: config.email.policeEmail,
+      subject: 'Test Email - Women Safety Guardian',
+      text: 'This is a test email from Women Safety Guardian.'
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+module.exports = { sendOTPEmail, sendSOSAlert, sendContactSOSAlert, sendTestEmail, isEmailConfigured };

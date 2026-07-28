@@ -1,0 +1,27 @@
+- generic [ref=f4e129]:
+  - generic [ref=f4e130]:
+    - heading "Women Safety Guardian" [level=1] [ref=f4e134]
+    - paragraph [ref=f4e135]: Sign in to your account
+  - generic [ref=f4e136]:
+    - generic [ref=f4e137]:
+      - generic [ref=f4e138]: Email Address
+      - textbox "Enter your email" [ref=f4e139]: police@guardian.com
+    - generic [ref=f4e140]:
+      - generic [ref=f4e141]: Password
+      - textbox "Enter your password" [ref=f4e142]: police123
+    - button "Sign In" [ref=f4e143] [cursor=pointer]
+  - paragraph [ref=f4e145]:
+    - text: Don't have an account?
+    - link "Register here" [ref=f4e146] [cursor=pointer]:
+      - /url: /register
+  - generic [ref=f4e147]:
+    - paragraph [ref=f4e148]: "Demo Accounts (pre-verified):"
+    - generic [ref=f4e149]:
+      - generic [ref=f4e150]:
+        - paragraph [ref=f4e151]: Police
+        - paragraph [ref=f4e152]: police@guardian.com
+        - paragraph [ref=f4e153]: police123
+      - generic [ref=f4e154]:
+        - paragraph [ref=f4e155]: User
+        - paragraph [ref=f4e156]: user@guardian.com
+        - paragraph [ref=f4e157]: user123
