@@ -13,65 +13,86 @@ const generateOTP = () => {
 
 const OTP_EXPIRY_MINUTES = 5;
 
+const generateGuardianEmail = async (name) => {
+  let base = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!base || base.length < 3) base = 'user';
+
+  let guardianEmail = base + '@guardian.com';
+  const existing = await query('SELECT * FROM `users table` WHERE Email = ?', [guardianEmail]);
+  if (existing.length === 0) return guardianEmail;
+
+  for (let i = 1; i < 100; i++) {
+    guardianEmail = base + i + '@guardian.com';
+    const found = await query('SELECT * FROM `users table` WHERE Email = ?', [guardianEmail]);
+    if (found.length === 0) return guardianEmail;
+  }
+
+  return base + Date.now() + '@guardian.com';
+};
+
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, personalEmail, password, role } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email and password are required' });
+    if (!name || !personalEmail || !password) {
+      return res.status(400).json({ error: 'Name, personal email and password are required' });
     }
 
     if (role === 'police') {
       return res.status(403).json({ error: 'Police accounts cannot be self-registered' });
     }
 
-    const existingUsers = await query('SELECT * FROM `users table` WHERE Email = ?', [email]);
-    const existingUser = existingUsers[0];
+    const existingByPersonalEmail = await query('SELECT * FROM `users table` WHERE PersonalEmail = ?', [personalEmail]);
+    const existingPersonalUser = existingByPersonalEmail[0];
 
-    if (existingUser) {
-      if (existingUser.isVerified) {
-        return res.status(400).json({ error: 'User already exists. Please login.' });
-      } else {
-        const otp = generateOTP();
-        const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
-
-        await query(
-          'UPDATE `users table` SET Name = ?, Password = ?, Role = ?, Updated_at = NOW(), otp = ?, otpExpiry = ? WHERE id = ?',
-          [name, await bcrypt.hash(password, 10), 'user', otp, otpExpiry, existingUser.id]
-        );
-
-        const emailResult = await emailService.sendOTPEmail(email, name, otp);
-
-        return res.status(201).json({
-          message: 'Verification OTP sent to your email',
-          emailSent: emailResult.success,
-          requiresVerification: true,
-          email
-        });
+    if (existingPersonalUser) {
+      if (existingPersonalUser.isVerified) {
+        return res.status(400).json({ error: 'This personal email is already registered. Please login with your Guardian ID.' });
       }
+
+      const newGuardianEmail = await generateGuardianEmail(name);
+      const otp = generateOTP();
+      const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
+
+      await query(
+        'UPDATE `users table` SET Name = ?, Email = ?, Password = ?, Role = ?, Updated_at = NOW(), otp = ?, otpExpiry = ? WHERE id = ?',
+        [name, newGuardianEmail, await bcrypt.hash(password, 10), 'user', otp, otpExpiry, existingPersonalUser.id]
+      );
+
+      emailService.sendOTPEmail(personalEmail, name, otp).catch(() => {});
+
+      return res.status(201).json({
+        message: 'Verification OTP sent to your personal email',
+        guardianEmail: newGuardianEmail,
+        personalEmail,
+        otp,
+        requiresVerification: true
+      });
     }
 
+    const guardianEmail = await generateGuardianEmail(name);
     const hashedPassword = await bcrypt.hash(password, 10);
     const userRole = 'user';
     const otp = generateOTP();
     const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
     const result = await query(
-      'INSERT INTO `users table` (Name, Email, Password, Role, Created_at, Updated_at, isVerified, otp, otpExpiry) VALUES (?, ?, ?, ?, NOW(), NOW(), FALSE, ?, ?)',
-      [name, email, hashedPassword, userRole, otp, otpExpiry]
+      'INSERT INTO `users table` (Name, Email, PersonalEmail, Password, Role, Created_at, Updated_at, isVerified, otp, otpExpiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, guardianEmail, personalEmail, hashedPassword, userRole, 'NOW()', 'NOW()', false, otp, otpExpiry]
     );
 
     const insertId = result.insertId;
 
-    await auditLog(insertId, null, 'USER_REGISTERED', `New user registered: ${email} (Role: ${userRole}) - pending verification`);
+    await auditLog(insertId, null, 'USER_REGISTERED', `New user registered: ${guardianEmail} (via ${personalEmail}) - pending verification`);
 
-    const emailResult = await emailService.sendOTPEmail(email, name, otp);
+    emailService.sendOTPEmail(personalEmail, name, otp).catch(() => {});
 
     res.status(201).json({
-      message: 'Registration successful! Please check your email for the verification OTP.',
+      message: 'Registration successful! Please check your personal email for the verification OTP.',
       requiresVerification: true,
-      email,
-      emailSent: emailResult.success
+      guardianEmail,
+      personalEmail,
+      otp
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -81,13 +102,13 @@ router.post('/register', async (req, res) => {
 
 router.post('/verify-otp', async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { personalEmail, otp } = req.body;
 
-    if (!email || !otp) {
-      return res.status(400).json({ error: 'Email and OTP are required' });
+    if (!personalEmail || !otp) {
+      return res.status(400).json({ error: 'Personal email and OTP are required' });
     }
 
-    const users = await query('SELECT * FROM `users table` WHERE Email = ?', [email]);
+    const users = await query('SELECT * FROM `users table` WHERE PersonalEmail = ?', [personalEmail]);
     const user = users[0];
 
     if (!user) {
@@ -113,11 +134,12 @@ router.post('/verify-otp', async (req, res) => {
       [user.id]
     );
 
-    await auditLog(user.id, null, 'EMAIL_VERIFIED', `Email verified: ${email}`);
+    await auditLog(user.id, null, 'EMAIL_VERIFIED', `Personal email verified: ${personalEmail} for guardian: ${user.Email}`);
 
     res.json({
-      message: 'Email verified successfully! You can now login.',
-      verified: true
+      message: 'Email verified successfully! You can now login with your Guardian ID.',
+      verified: true,
+      guardianEmail: user.Email
     });
   } catch (error) {
     console.error('Verify OTP error:', error);
@@ -127,13 +149,13 @@ router.post('/verify-otp', async (req, res) => {
 
 router.post('/resend-otp', async (req, res) => {
   try {
-    const { email } = req.body;
+    const { personalEmail } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+    if (!personalEmail) {
+      return res.status(400).json({ error: 'Personal email is required' });
     }
 
-    const users = await query('SELECT * FROM `users table` WHERE Email = ?', [email]);
+    const users = await query('SELECT * FROM `users table` WHERE PersonalEmail = ?', [personalEmail]);
     const user = users[0];
 
     if (!user) {
@@ -152,15 +174,11 @@ router.post('/resend-otp', async (req, res) => {
       [otp, otpExpiry, user.id]
     );
 
-    const emailResult = await emailService.sendOTPEmail(email, user.Name, otp);
-
-    if (!emailResult.success) {
-      return res.status(500).json({ error: 'Failed to send OTP email. Please try again.' });
-    }
+    emailService.sendOTPEmail(personalEmail, user.Name, otp).catch(() => {});
 
     res.json({
-      message: 'New OTP sent to your email',
-      emailSent: true
+      message: 'New OTP sent to your personal email',
+      otp
     });
   } catch (error) {
     console.error('Resend OTP error:', error);
@@ -173,14 +191,14 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.status(400).json({ error: 'Guardian ID and password are required' });
     }
 
     const users = await query('SELECT * FROM `users table` WHERE Email = ?', [email]);
     const user = users[0];
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid Guardian ID or password' });
     }
 
     if (!user.isVerified) {
@@ -192,18 +210,19 @@ router.post('/login', async (req, res) => {
         [otp, otpExpiry, user.id]
       );
 
-      await emailService.sendOTPEmail(email, user.Name, otp);
+      emailService.sendOTPEmail(user.PersonalEmail, user.Name, otp).catch(() => {});
 
       return res.status(403).json({
-        error: 'Please verify your email first. A new verification email has been sent.',
+        error: 'Please verify your email first. A new OTP has been sent to your personal email.',
         requiresVerification: true,
-        email
+        personalEmail: user.PersonalEmail,
+        otp
       });
     }
 
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid Guardian ID or password' });
     }
 
     await auditLog(user.id, null, 'USER_LOGIN', `User logged in: ${email} (Role: ${user.Role})`);

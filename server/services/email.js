@@ -26,7 +26,9 @@ const initTransporter = () => {
     },
     tls: {
       rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 8000,
+    greetingTimeout: 8000
   });
 };
 
@@ -42,19 +44,27 @@ const sendOTPEmail = async (email, name, otp) => {
 
   try {
     const mailOptions = {
-      from: config.email.user,
+      from: 'ZELDA <' + config.email.user + '>',
       to: email,
-      subject: 'Women Safety Guardian - Email Verification',
+      subject: 'ZELDA - Email Verification',
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #dc2626;">Women Safety Guardian</h2>
-          <p>Hello ${name},</p>
-          <p>Thank you for registering. Please verify your email with the OTP below:</p>
-          <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #dc2626;">${otp}</span>
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fafafa; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
+          <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 30px; text-align: center;">
+            <h1 style="color: #e94560; margin: 0; font-size: 28px; letter-spacing: 3px;">ZELDA</h1>
+            <p style="color: #a0a0b0; margin: 5px 0 0; font-size: 13px;">Women Safety Guardian</p>
           </div>
-          <p>This OTP expires in 5 minutes.</p>
-          <p>If you didn't register, please ignore this email.</p>
+          <div style="padding: 30px;">
+            <p style="color: #333; font-size: 16px;">Hello ${name},</p>
+            <p style="color: #555;">Thank you for registering. Use the OTP below to verify your email:</p>
+            <div style="background: #f0f0f5; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0; border: 1px solid #e0e0e5;">
+              <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #e94560;">${otp}</span>
+            </div>
+            <p style="color: #888; font-size: 13px;">This OTP is valid for 5 minutes.</p>
+            <p style="color: #888; font-size: 13px;">If you didn't request this, please ignore this email.</p>
+          </div>
+          <div style="background: #1a1a2e; padding: 15px; text-align: center;">
+            <p style="color: #666; font-size: 11px; margin: 0;">ZELDA &mdash; Women Safety Guardian</p>
+          </div>
         </div>
       `
     };

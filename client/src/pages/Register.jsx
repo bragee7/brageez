@@ -5,14 +5,19 @@ import { authAPI } from '../services/api';
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    personalEmail: '',
     password: '',
     confirmPassword: ''
   });
+  const [guardianEmail, setGuardianEmail] = useState('');
   const [otpData, setOtpData] = useState({
-    email: '',
+    personalEmail: '',
     otp: ''
   });
+
+  const previewGuardianId = formData.name
+    ? formData.name.toLowerCase().replace(/[^a-z0-9]/g, '') + '@guardian.com'
+    : '';
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,9 +55,10 @@ const Register = () => {
     try {
       const { confirmPassword, ...registerData } = formData;
       const response = await authAPI.register(registerData);
-      setOtpData({ email: formData.email, otp: '' });
+      setGuardianEmail(response.data.guardianEmail || previewGuardianId);
+      setOtpData({ personalEmail: formData.personalEmail, otp: '' });
       setStep(2);
-      setSuccess(response.data.message || 'OTP sent to your email!');
+      setSuccess(response.data.message || 'OTP sent to your personal email!');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
@@ -72,8 +78,8 @@ const Register = () => {
     setError('');
 
     try {
-      await authAPI.verifyOTP({ email: otpData.email, otp: otpData.otp });
-      setSuccess('Email verified! You can now login.');
+      await authAPI.verifyOTP({ personalEmail: otpData.personalEmail, otp: otpData.otp });
+      setSuccess('Email verified! You can now login with your Guardian ID.');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError(err.response?.data?.error || 'OTP verification failed. Please try again.');
@@ -88,8 +94,8 @@ const Register = () => {
     setSuccess('');
 
     try {
-      const response = await authAPI.resendOTP({ email: otpData.email });
-      setSuccess(response.data.message || 'New OTP sent to your email!');
+      const response = await authAPI.resendOTP({ personalEmail: otpData.personalEmail });
+      setSuccess(response.data.message || 'New OTP sent to your personal email!');
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to resend OTP. Please try again.');
     } finally {
@@ -110,7 +116,7 @@ const Register = () => {
             {step === 1 ? 'Create Account' : 'Verify Email'}
           </h1>
           <p className="text-gray-500 mt-2">
-            {step === 1 ? 'Join Women Safety Guardian' : 'Enter the OTP sent to your email'}
+            {step === 1 ? 'Create your ZELDA Guardian account' : 'Enter the OTP sent to your personal email'}
           </p>
         </div>
 
@@ -145,15 +151,24 @@ const Register = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                Your Guardian ID
+              </label>
+              <div className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-500 text-sm">
+                {previewGuardianId || 'Enter your name above'}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Personal Email (for OTP)
               </label>
               <input
                 type="email"
-                name="email"
-                value={formData.email}
+                name="personalEmail"
+                value={formData.personalEmail}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                placeholder="Enter your email"
+                placeholder="e.g. you@gmail.com"
                 required
               />
             </div>
@@ -219,7 +234,10 @@ const Register = () => {
               <p className="text-gray-600 text-sm mb-2">
                 We've sent a verification code to
               </p>
-              <p className="text-gray-800 font-semibold">{otpData.email}</p>
+              <p className="text-gray-800 font-semibold">{otpData.personalEmail}</p>
+              <p className="text-gray-500 text-xs mt-1">
+                Your Guardian ID: <span className="font-semibold">{guardianEmail}</span>
+              </p>
             </div>
 
             <form onSubmit={handleVerifyOtp}>
@@ -265,7 +283,7 @@ const Register = () => {
                 onClick={() => setStep(1)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                Change email
+                Change personal email
               </button>
               <button
                 type="button"

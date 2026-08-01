@@ -29,10 +29,25 @@ const upload = multer({
   limits: { fileSize: 100 * 1024 * 1024 }
 });
 
-router.post('/', authMiddleware, upload.fields([
-  { name: 'video', maxCount: 1 },
-  { name: 'audio', maxCount: 1 }
-]), async (req, res) => {
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: `Upload error: ${err.message}` });
+  }
+  if (err) {
+    return res.status(500).json({ error: `Upload error: ${err.message}` });
+  }
+  next();
+};
+
+router.post('/', authMiddleware, (req, res, next) => {
+  upload.fields([
+    { name: 'video', maxCount: 1 },
+    { name: 'audio', maxCount: 1 }
+  ])(req, res, (err) => {
+    if (err) return handleMulterError(err, req, res, next);
+    next();
+  });
+}, async (req, res) => {
   try {
     const { locationLink, latitude, longitude, notes } = req.body;
     

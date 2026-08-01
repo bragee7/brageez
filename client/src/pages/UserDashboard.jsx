@@ -364,23 +364,18 @@ const UserDashboard = () => {
       
       mediaRecorder.start(100);
 
-      const timer = setInterval(() => {
-        setRecordingTime((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            stopRecording(chunks);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      const recordingDuration = 30000;
+      const recordingStartTime = Date.now();
 
-      setTimeout(() => {
-        if (mediaRecorder.state === 'recording') {
+      const timer = setInterval(() => {
+        const elapsed = Date.now() - recordingStartTime;
+        const remaining = Math.max(0, Math.ceil((recordingDuration - elapsed) / 1000));
+        setRecordingTime(remaining);
+        if (elapsed >= recordingDuration) {
           clearInterval(timer);
           stopRecording(chunks);
         }
-      }, 30000);
+      }, 250);
 
     } catch (err) {
       console.error('Error starting recording:', err);
@@ -409,11 +404,11 @@ const UserDashboard = () => {
       const audioBlob = new Blob(chunks, { type: 'audio/webm' });
       setRecordedVideoBlob(videoBlob);
       setRecordedAudioBlob(audioBlob);
-      sendEmergencyData(videoBlob);
+      sendEmergencyData(videoBlob, audioBlob);
     }, 500);
   };
 
-  const sendEmergencyData = async (videoBlob) => {
+  const sendEmergencyData = async (videoBlob, audioBlob) => {
     try {
       const freshLocationLink = await getLocation(true);
       
@@ -422,7 +417,7 @@ const UserDashboard = () => {
       const videoFile = new File([videoBlob], 'emergency-video.webm', { type: 'video/webm' });
       formData.append('video', videoFile);
       
-      const audioFile = new File([videoBlob], 'emergency-audio.webm', { type: 'video/webm' });
+      const audioFile = new File([audioBlob || videoBlob], 'emergency-audio.webm', { type: 'audio/webm' });
       formData.append('audio', audioFile);
       
       formData.append('locationLink', freshLocationLink || locationLink || '');

@@ -30,7 +30,7 @@ const Login = () => {
     } catch (err) {
       const errData = err.response?.data;
       if (errData?.requiresVerification) {
-        setError('Please verify your email first. A new verification email has been sent.');
+        setError('Please verify your email first. A new OTP has been sent to your personal email.');
       } else {
         setError(errData?.error || 'Login failed. Please try again.');
       }
@@ -66,18 +66,18 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
-              placeholder="Enter your email"
-              required
-            />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Guardian ID
+              </label>
+              <input
+                type="text"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                placeholder="e.g. johndoe@guardian.com"
+                required
+              />
           </div>
 
           <div>

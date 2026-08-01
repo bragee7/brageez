@@ -19,10 +19,14 @@ function readJSON(filePath) {
 }
 
 function writeJSON(filePath, data) {
-  const key = path.basename(filePath).replace('.json', '');
-  const obj = {};
-  obj[key] = data;
-  fs.writeFileSync(filePath, JSON.stringify(obj, null, 2));
+  try {
+    const key = path.basename(filePath).replace('.json', '');
+    const obj = {};
+    obj[key] = data;
+    fs.writeFileSync(filePath, JSON.stringify(obj, null, 2));
+  } catch (e) {
+    console.error('Failed to write', filePath, e.message);
+  }
 }
 
 function now() {
