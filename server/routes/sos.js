@@ -64,8 +64,8 @@ router.post('/', authMiddleware, (req, res, next) => {
 
     const videoUrl = videoFile ? `/uploads/${videoFile.filename}` : null;
     const audioUrl = audioFile ? `/uploads/${audioFile.filename}` : null;
-    const createdAt = new Date().toISOString();
-    const updatedAt = new Date().toISOString();
+    const createdAt = new Date();
+    const updatedAt = new Date();
 
     const result = await query(
       `INSERT INTO \`sos cases table\` (user_id, user_email, location_link, latitude, longitude, status, notes, video_url, audio_url, trigger_type, created_at, updated_at) 
@@ -224,7 +224,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const { status, notes } = req.body;
-    const updatedAt = new Date().toISOString();
+    const updatedAt = new Date();
 
     const existingCases = await query('SELECT * FROM `sos cases table` WHERE id = ?', [req.params.id]);
     const existingCase = existingCases[0];
@@ -304,7 +304,7 @@ router.put('/:id/location', authMiddleware, async (req, res) => {
     const latValue = latitude && String(latitude).trim() ? String(latitude).trim() : existingCase.latitude;
     const lngValue = longitude && String(longitude).trim() ? String(longitude).trim() : existingCase.longitude;
     const locValue = locationLink && String(locationLink).trim() ? String(locationLink).trim() : existingCase.location_link;
-    const updatedAt = new Date().toISOString();
+    const updatedAt = new Date();
 
     await query(
       'UPDATE `sos cases table` SET latitude = ?, longitude = ?, location_link = ?, updated_at = ? WHERE id = ?',

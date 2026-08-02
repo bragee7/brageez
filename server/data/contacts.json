@@ -1,24 +1,3 @@
 {
-  "contacts": [
-    {
-      "id": "7243f6e9-dac2-45f5-a4c0-4d8c226994f5",
-      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
-      "name": "BRAGATHEESH V",
-      "phone": "08807984687",
-      "email": "vbragatheesh@gmail.com",
-      "relation": "Parent",
-      "created_at": null,
-      "updated_at": null
-    },
-    {
-      "id": "cef553c9-0255-41af-87a5-b6a766d962a6",
-      "user_id": "d029b563-a2e2-46f2-86c9-8fe20588fcc9",
-      "name": "BRAGATHEESH ",
-      "phone": "8248901486",
-      "email": "vbragatheesh@gmail.com",
-      "relation": "Friend",
-      "created_at": null,
-      "updated_at": null
-    }
-  ]
+  "contacts": []
 }

@@ -1,12 +1,8 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const { authMiddleware } = require('../middleware/auth');
 const { query, auditLog } = require('../db');
 
 const router = express.Router();
-
-const CONTACTS_FILE = path.join(__dirname, '../data/contacts.json');
 
 router.use(authMiddleware);
 
@@ -84,18 +80,21 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(CONTACTS_FILE, 'utf8'));
-    const contactIndex = data.contacts.findIndex(c => c.id === req.params.id && c.user_id === req.user.userId);
+    const existing = await query(
+      'SELECT * FROM `contacts table` WHERE id = ? AND user_id = ?',
+      [req.params.id, req.user.userId]
+    );
 
-    if (contactIndex === -1) {
+    if (existing.length === 0) {
       return res.status(404).json({ error: 'Contact not found' });
     }
 
-    const deleted = data.contacts[contactIndex];
-    data.contacts.splice(contactIndex, 1);
-    fs.writeFileSync(CONTACTS_FILE, JSON.stringify(data, null, 2));
+    await query(
+      'DELETE FROM `contacts table` WHERE id = ? AND user_id = ?',
+      [req.params.id, req.user.userId]
+    );
 
-    await auditLog(req.user.userId, null, 'CONTACT_DELETED', `Contact deleted: ${deleted.name}`);
+    await auditLog(req.user.userId, null, 'CONTACT_DELETED', `Contact deleted: ${existing[0].name}`);
 
     res.json({ message: 'Contact deleted successfully' });
   } catch (error) {

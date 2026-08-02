@@ -52,7 +52,7 @@ router.post('/register', async (req, res) => {
 
       const newGuardianEmail = await generateGuardianEmail(name);
       const otp = generateOTP();
-      const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
+      const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
       await query(
         'UPDATE `users table` SET Name = ?, Email = ?, Password = ?, Role = ?, Updated_at = NOW(), otp = ?, otpExpiry = ? WHERE id = ?',
@@ -74,11 +74,11 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userRole = 'user';
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
+    const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
     const result = await query(
-      'INSERT INTO `users table` (Name, Email, PersonalEmail, Password, Role, Created_at, Updated_at, isVerified, otp, otpExpiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, guardianEmail, personalEmail, hashedPassword, userRole, 'NOW()', 'NOW()', false, otp, otpExpiry]
+      'INSERT INTO `users table` (Name, Email, PersonalEmail, Password, Role, Created_at, Updated_at, isVerified, otp, otpExpiry) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), FALSE, ?, ?)',
+      [name, guardianEmail, personalEmail, hashedPassword, userRole, otp, otpExpiry]
     );
 
     const insertId = result.insertId;
@@ -167,7 +167,7 @@ router.post('/resend-otp', async (req, res) => {
     }
 
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
+    const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
     await query(
       'UPDATE `users table` SET otp = ?, otpExpiry = ?, Updated_at = NOW() WHERE id = ?',
@@ -203,7 +203,7 @@ router.post('/login', async (req, res) => {
 
     if (!user.isVerified) {
       const otp = generateOTP();
-      const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
+      const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
       await query(
         'UPDATE `users table` SET otp = ?, otpExpiry = ?, Updated_at = NOW() WHERE id = ?',
