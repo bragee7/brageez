@@ -797,44 +797,44 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
         children: [
           TextFormField(
             controller: _nameController,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.gray900),
             decoration: const InputDecoration(
               labelText: 'Full Name *',
               filled: true,
-              fillColor: AppColors.gray800,
+              fillColor: Colors.white,
             ),
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: _phoneController,
             keyboardType: TextInputType.phone,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.gray900),
             decoration: const InputDecoration(
               labelText: 'Phone Number *',
               filled: true,
-              fillColor: AppColors.gray800,
+              fillColor: Colors.white,
             ),
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.gray900),
             decoration: const InputDecoration(
               labelText: 'Email (for SOS alerts)',
               filled: true,
-              fillColor: AppColors.gray800,
+              fillColor: Colors.white,
             ),
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<String>(
             initialValue: _relation.isEmpty ? null : _relation,
-            dropdownColor: AppColors.gray800,
-            style: const TextStyle(color: Colors.white),
+            dropdownColor: Colors.white,
+            style: const TextStyle(color: AppColors.gray900),
             decoration: const InputDecoration(
               labelText: 'Relation',
               filled: true,
-              fillColor: AppColors.gray800,
+              fillColor: Colors.white,
             ),
             items: _relations
                 .map((r) => DropdownMenuItem(value: r, child: Text(r)))
@@ -885,44 +885,44 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           children: [
             TextFormField(
               controller: _nameController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.gray900),
               decoration: const InputDecoration(
                 labelText: 'Full Name',
                 filled: true,
-                fillColor: AppColors.gray800,
+                fillColor: Colors.white,
               ),
             ),
             const SizedBox(height: 10),
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.gray900),
               decoration: const InputDecoration(
                 labelText: 'Phone',
                 filled: true,
-                fillColor: AppColors.gray800,
+                fillColor: Colors.white,
               ),
             ),
             const SizedBox(height: 10),
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.gray900),
               decoration: const InputDecoration(
                 labelText: 'Email',
                 filled: true,
-                fillColor: AppColors.gray800,
+                fillColor: Colors.white,
               ),
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
               initialValue: _relation.isEmpty ? null : _relation,
-              dropdownColor: AppColors.gray800,
-              style: const TextStyle(color: Colors.white),
+              dropdownColor: Colors.white,
+              style: const TextStyle(color: AppColors.gray900),
               decoration: const InputDecoration(
                 labelText: 'Relation',
                 filled: true,
-                fillColor: AppColors.gray800,
+                fillColor: Colors.white,
               ),
               items: _relations
                   .map((r) => DropdownMenuItem(value: r, child: Text(r)))

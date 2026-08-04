@@ -589,11 +589,11 @@ class _CaseDetailsScreenState extends State<CaseDetailsScreen> {
             controller: TextEditingController(text: _notes),
             onChanged: (v) => _notes = v,
             maxLines: 5,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.gray900),
             decoration: const InputDecoration(
               hintText: 'Add notes about this case...',
               filled: true,
-              fillColor: AppColors.gray900,
+              fillColor: Colors.white,
             ),
           ),
           const SizedBox(height: 12),
