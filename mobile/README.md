@@ -16,6 +16,8 @@ port of the React web app, including the 24/7 background voice listener.
 - Offline keyword detection using Vosk (`vosk-model-small-en-us-0.15`)
 - Runs in a foreground service (`flutter_background_service`) with a persistent
   notification, using the `microphone` foreground type
+- **Auto-starts on login** for user accounts (requests `RECORD_AUDIO` +
+  `POST_NOTIFICATIONS` at runtime via `permission_handler`); stops on logout
 - Keywords: "help me", "emergency", "save me"
 - On keyword detection while the app is backgrounded, a full-screen intent
   notification brings the app to the foreground to trigger the SOS flow
@@ -23,6 +25,14 @@ port of the React web app, including the 24/7 background voice listener.
   first use to the app documents directory (`app_flutter/vosk/`)
 - The dashboard switch reflects the real foreground-service status and surfaces
   startup errors (e.g. missing `RECORD_AUDIO` permission)
+
+### Verified on a real device (Redmi Note 13)
+- Voice auto-start after login: foreground service with `microphone` type +
+  persistent notification confirmed; the dashboard switch reflects live state
+- Real-mic keyword test: saying "help me" triggered the full SOS flow
+  (cancel window → countdown → 30s recording → upload) and created a case with
+  live GPS; the case appeared on the police dashboard with the LIVE tracking badge
+- The live location card populates on the dashboard via the background position watch
 
 ### Police Dashboard
 - Real-time case list via Socket.IO
