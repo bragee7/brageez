@@ -40,8 +40,15 @@ A comprehensive women safety emergency response system with real-time SOS alerts
 - bcryptjs (password hashing)
 
 ### Storage
-- Local JSON files for data persistence
+- MySQL (database `zelda_new`) via `mysql2` connection pool
 - Local file system for media uploads
+
+## Mobile App (Flutter)
+
+An Android Flutter app with feature parity to the web client is in `mobile/`,
+including the 24/7 background voice listener (Vosk offline speech recognition in
+a foreground service). See [mobile/README.md](mobile/README.md) for build,
+run, and demo instructions.
 
 ## Quick Start
 
@@ -177,12 +184,10 @@ Uses browser Geolocation API:
 - Safari (limited voice support)
 
 ## Future Enhancements
-- [ ] WebSocket for real-time updates
 - [ ] Push notifications
 - [ ] SMS integration
 - [ ] Email alerts
-- [ ] Mobile app version
-- [ ] MongoDB database
+- [x] Mobile app version (Android / Flutter)
 - [ ] Cloud storage for media
 - [ ] Multi-language support
 

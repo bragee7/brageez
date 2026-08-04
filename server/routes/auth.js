@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { query, auditLog } = require('../db');
-const { JWT_SECRET } = require('../middleware/auth');
+const { JWT_SECRET, authMiddleware } = require('../middleware/auth');
 const emailService = require('../services/email');
 
 const router = express.Router();
@@ -29,6 +29,29 @@ const generateGuardianEmail = async (name) => {
 
   return base + Date.now() + '@guardian.com';
 };
+
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const users = await query('SELECT * FROM `users table` WHERE id = ?', [req.user.userId]);
+    const user = users[0];
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        id: user.id,
+        name: user.Name,
+        email: user.Email,
+        role: user.Role
+      }
+    });
+  } catch (error) {
+    console.error('Me error:', error);
+    res.status(500).json({ error: 'Server error fetching user' });
+  }
+});
 
 router.post('/register', async (req, res) => {
   try {
@@ -65,7 +88,6 @@ router.post('/register', async (req, res) => {
         message: 'Verification OTP sent to your personal email',
         guardianEmail: newGuardianEmail,
         personalEmail,
-        otp,
         requiresVerification: true
       });
     }
@@ -91,8 +113,7 @@ router.post('/register', async (req, res) => {
       message: 'Registration successful! Please check your personal email for the verification OTP.',
       requiresVerification: true,
       guardianEmail,
-      personalEmail,
-      otp
+      personalEmail
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -177,8 +198,7 @@ router.post('/resend-otp', async (req, res) => {
     emailService.sendOTPEmail(personalEmail, user.Name, otp).catch(() => {});
 
     res.json({
-      message: 'New OTP sent to your personal email',
-      otp
+      message: 'New OTP sent to your personal email'
     });
   } catch (error) {
     console.error('Resend OTP error:', error);
@@ -215,8 +235,7 @@ router.post('/login', async (req, res) => {
       return res.status(403).json({
         error: 'Please verify your email first. A new OTP has been sent to your personal email.',
         requiresVerification: true,
-        personalEmail: user.PersonalEmail,
-        otp
+        personalEmail: user.PersonalEmail
       });
     }
 

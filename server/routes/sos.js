@@ -5,6 +5,7 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { authMiddleware } = require('../middleware/auth');
 const { query, auditLog } = require('../db');
+const { emitNewCase, emitCaseUpdated } = require('../socket');
 const emailService = require('../services/email');
 
 const router = express.Router();
@@ -26,7 +27,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 }
+  limits: { fileSize: 100 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMime = /^(video|audio)\//;
+    if (allowedMime.test(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only video and audio files are allowed'));
+    }
+  }
 });
 
 const handleMulterError = (err, req, res, next) => {
@@ -139,6 +148,8 @@ router.post('/', authMiddleware, (req, res, next) => {
       created_at: createdAt,
       updated_at: updatedAt
     };
+
+    emitNewCase(newCase);
 
     res.status(201).json({
       message: 'SOS case created successfully',
@@ -271,6 +282,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
       createdAt: updatedCase.created_at,
       updatedAt: updatedCase.updated_at
     };
+
+    emitCaseUpdated(mappedCase);
 
     res.json({
       message: 'Case updated successfully',

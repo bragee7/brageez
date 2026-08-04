@@ -1,15 +1,20 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const path = require('path');
 
 const config = require('./config');
 const { pool } = require('./db');
+const { initSocket } = require('./socket');
 const authRoutes = require('./routes/auth');
 const sosRoutes = require('./routes/sos');
 const contactsRoutes = require('./routes/contacts');
 
 const app = express();
 const PORT = config.server.port;
+const httpServer = http.createServer(app);
+
+initSocket(httpServer);
 
 app.use(cors());
 app.use(express.json());
@@ -62,7 +67,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`🚀 Women Safety Guardian running on http://localhost:${PORT}`);
   console.log(`📊 Database: ${config.db.name}`);
   console.log(`📧 Email: ${config.email.user || 'Not configured'}`);
