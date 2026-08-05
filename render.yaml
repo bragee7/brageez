@@ -1,0 +1,43 @@
+# Render service definition (import this file in Render dashboard, or `render deploy --service-id` via deploy script)
+# Sensitive values come from secrets you create in: Render dashboard → Service → Environment → Secrets
+services:
+  - type: web
+    name: women-safety-api
+    runtime: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./server/Dockerfile
+    build:
+      context: ./server
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: DB_HOST
+        value: db4free.net
+      - key: DB_PORT
+        value: 3306
+      - key: DB_NAME
+        value: zelda_new
+      - key: DB_USER
+        fromSecret: DB_USER
+      - key: DB_PASSWORD
+        fromSecret: DB_PASSWORD
+      - key: JWT_SECRET
+        fromSecret: JWT_SECRET
+      - key: EMAIL_USER
+        fromSecret: EMAIL_USER
+      - key: EMAIL_PASS
+        fromSecret: EMAIL_PASS
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_FROM
+        value: ZELDA <zyracmt@gmail.com>
+      - key: POLICE_EMAIL
+        value: police@guardian.com
+      - key: CLIENT_URL
+        value: https://women-safety-api.onrender.com
+      - key: API_URL
+        value: https://women-safety-api.onrender.com
