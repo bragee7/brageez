@@ -48,6 +48,36 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
+const notifySOS = async (caseForEmail, videoFilePath, audioFilePath, userId) => {
+  try {
+    const emailResult = await emailService.sendSOSAlert(caseForEmail, videoFilePath, audioFilePath);
+
+    if (emailResult.success) {
+      await auditLog(userId, caseForEmail.id, 'EMAIL_SENT', `SOS alert email sent to police: ${emailResult.messageId}`);
+    } else {
+      await auditLog(userId, caseForEmail.id, 'EMAIL_FAILED', `Failed to send SOS email: ${emailResult.error}`);
+    }
+
+    const contacts = await query(
+      'SELECT * FROM `contacts table` WHERE user_id = ?',
+      [userId]
+    );
+
+    for (const contact of contacts) {
+      if (contact.email) {
+        const contactResult = await emailService.sendContactSOSAlert(caseForEmail, contact);
+        if (contactResult.success) {
+          await auditLog(userId, caseForEmail.id, 'CONTACT_EMAIL_SENT', `SOS alert sent to contact: ${contact.name} (${contact.email})`);
+        } else {
+          await auditLog(userId, caseForEmail.id, 'CONTACT_EMAIL_FAILED', `Failed to send SOS to contact: ${contact.name} - ${contactResult.error}`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('SOS notification error:', error);
+  }
+};
+
 router.post('/', authMiddleware, (req, res, next) => {
   upload.fields([
     { name: 'video', maxCount: 1 },
@@ -112,29 +142,7 @@ router.post('/', authMiddleware, (req, res, next) => {
     const videoFilePath = videoFile ? path.join(uploadsDir, videoFile.filename) : null;
     const audioFilePath = audioFile ? path.join(uploadsDir, audioFile.filename) : null;
 
-    const emailResult = await emailService.sendSOSAlert(caseForEmail, videoFilePath, audioFilePath);
-    
-    if (emailResult.success) {
-      await auditLog(req.user.userId, insertId, 'EMAIL_SENT', `SOS alert email sent to police: ${emailResult.messageId}`);
-    } else {
-      await auditLog(req.user.userId, insertId, 'EMAIL_FAILED', `Failed to send SOS email: ${emailResult.error}`);
-    }
-
-    const contacts = await query(
-      'SELECT * FROM `contacts table` WHERE user_id = ?',
-      [req.user.userId]
-    );
-
-    for (const contact of contacts) {
-      if (contact.email) {
-        const contactResult = await emailService.sendContactSOSAlert(caseForEmail, contact);
-        if (contactResult.success) {
-          await auditLog(req.user.userId, insertId, 'CONTACT_EMAIL_SENT', `SOS alert sent to contact: ${contact.name} (${contact.email})`);
-        } else {
-          await auditLog(req.user.userId, insertId, 'CONTACT_EMAIL_FAILED', `Failed to send SOS to contact: ${contact.name} - ${contactResult.error}`);
-        }
-      }
-    }
+    notifySOS(caseForEmail, videoFilePath, audioFilePath, req.user.userId);
 
     const newCase = {
       id: insertId,
