@@ -27,7 +27,10 @@ class ApiClient {
       },
       onError: (error, handler) async {
         final status = error.response?.statusCode;
-        if (status == 401 && !error.requestOptions.path.contains('/auth/login')) {
+        final path = error.requestOptions.path;
+        final authHeader = error.requestOptions.headers['Authorization'];
+        final hadToken = authHeader is String && authHeader.isNotEmpty;
+        if (status == 401 && hadToken && !path.contains('/auth/login')) {
           await clearToken();
         }
         handler.next(error);

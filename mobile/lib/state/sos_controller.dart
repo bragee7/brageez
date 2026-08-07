@@ -40,6 +40,7 @@ class SosController extends ChangeNotifier {
   CameraController? _cameraController;
   List<CameraDescription> _cameras = [];
   bool _cameraInitialized = false;
+  CameraLensDirection _selectedLens = CameraLensDirection.back;
 
   Timer? _cancelTimerRef;
   Timer? _countdownRef;
@@ -67,6 +68,7 @@ class SosController extends ChangeNotifier {
   bool get showPreview => _showPreview;
   CameraController? get cameraController => _cameraController;
   bool get cameraInitialized => _cameraInitialized;
+  CameraLensDirection get selectedLens => _selectedLens;
   bool get voiceEnabled => _voiceEnabled;
 
   bool get isBusy =>
@@ -129,6 +131,12 @@ class SosController extends ChangeNotifier {
 
   void playAlertSound() {
     SystemSound.play(SystemSoundType.alert);
+  }
+
+  void setCameraLens(CameraLensDirection lens) {
+    if (lens == _selectedLens) return;
+    _selectedLens = lens;
+    notifyListeners();
   }
 
   Future<void> triggerSOS({String? triggerKeyword}) async {
@@ -205,7 +213,7 @@ class SosController extends ChangeNotifier {
       }
 
       final camera = _cameras.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
+        (c) => c.lensDirection == _selectedLens,
         orElse: () => _cameras.first,
       );
 
@@ -253,7 +261,7 @@ class SosController extends ChangeNotifier {
     _cameraInitialized = false;
 
     _recordedVideoPath = videoFile?.path;
-    _recordedAudioPath = videoFile?.path;
+    _recordedAudioPath = '';
 
     await sendEmergencyData();
   }
@@ -277,7 +285,7 @@ class SosController extends ChangeNotifier {
 
       final caseData = await _sosService.createCase(
         videoPath: videoPath,
-        audioPath: videoPath,
+        audioPath: '',
         locationLink: locationLink,
         latitude: latitude,
         longitude: longitude,

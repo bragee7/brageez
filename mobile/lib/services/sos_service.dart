@@ -20,10 +20,12 @@ class SosService {
         'video',
         await MultipartFile.fromFile(videoPath, filename: 'emergency-video.webm'),
       ));
-      formData.files.add(MapEntry(
-        'audio',
-        await MultipartFile.fromFile(videoPath, filename: 'emergency-audio.webm'),
-      ));
+      if (audioPath.isNotEmpty && audioPath != videoPath) {
+        formData.files.add(MapEntry(
+          'audio',
+          await MultipartFile.fromFile(audioPath, filename: 'emergency-audio.webm'),
+        ));
+      }
     }
     formData.fields.addAll([
       MapEntry('locationLink', locationLink),

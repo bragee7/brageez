@@ -21,6 +21,25 @@ class LocationService {
         permission == LocationPermission.always;
   }
 
+  static Future<bool> requestLocationPermission() async {
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
+      return false;
+    }
+    return serviceEnabled();
+  }
+
+  static Future<bool> serviceEnabled() async {
+    return Geolocator.isLocationServiceEnabled();
+  }
+
+  static Future<bool> openLocationSettings() =>
+      Geolocator.openLocationSettings();
+
   static Future<AppLocation?> getCurrent({bool fresh = true}) async {
     try {
       if (!await hasPermission()) return null;

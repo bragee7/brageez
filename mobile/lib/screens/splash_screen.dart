@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../core/theme.dart';
 import '../state/auth_provider.dart';
 import 'login_screen.dart';
-import 'police_dashboard_screen.dart';
 import 'user_dashboard_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,12 +26,12 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     if (auth.isAuthenticated) {
-      final role = auth.user?.role;
-      final target = role == 'police'
-          ? const PoliceDashboardScreen()
-          : const UserDashboardScreen();
+      if (auth.user?.role == 'police') {
+        await auth.logout();
+        if (!mounted) return;
+      }
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => target),
+        MaterialPageRoute(builder: (_) => const UserDashboardScreen()),
       );
     } else {
       Navigator.of(context).pushReplacement(

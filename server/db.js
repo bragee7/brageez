@@ -1,29 +1,22 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 const config = require('./config');
 
-const pool = mysql.createPool({
-  host: config.db.host,
-  port: Number(config.db.port),
-  user: config.db.user,
-  password: config.db.password,
-  database: config.db.name,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  timezone: 'Z',
-  dateStrings: false
+const pool = new Pool({
+  connectionString: config.db.connectionString,
+  ssl: config.db.ssl ? { rejectUnauthorized: false } : false,
+  max: 10,
+  idleTimeoutMillis: 30000
 });
 
 const query = async (sql, params = []) => {
-  const [rows] = await pool.execute(sql, params);
-  if (Array.isArray(rows)) return rows;
-  return rows;
+  const result = await pool.query(sql, params);
+  return result.rows;
 };
 
 const auditLog = async (userId, caseId, action, details) => {
   try {
     await query(
-      'INSERT INTO `audit log table` (user_id, case_id, Action, details, created_at) VALUES (?, ?, ?, ?, NOW())',
+      'INSERT INTO audit_log (user_id, case_id, action, details, created_at) VALUES ($1, $2, $3, $4, now())',
       [userId || null, caseId || null, action, details || '']
     );
   } catch (error) {

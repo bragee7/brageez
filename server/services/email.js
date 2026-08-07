@@ -78,7 +78,7 @@ const sendOTPEmail = async (email, name, otp) => {
   }
 };
 
-const sendSOSAlert = async (caseData, videoPath, audioPath) => {
+const sendSOSAlert = async (caseData, videoUrl, audioUrl) => {
   const transporter = initTransporter();
   if (!transporter) {
     console.log('📧 Email not configured - SOS alert skipped');
@@ -86,12 +86,12 @@ const sendSOSAlert = async (caseData, videoPath, audioPath) => {
   }
 
   try {
-    const attachments = [];
-    if (videoPath && fs.existsSync(videoPath)) {
-      attachments.push({ filename: 'emergency-video.webm', path: videoPath });
+    const mediaLinks = [];
+    if (videoUrl) {
+      mediaLinks.push(`<p><strong>Video:</strong> <a href="${videoUrl}">Play emergency video</a></p>`);
     }
-    if (audioPath && fs.existsSync(audioPath)) {
-      attachments.push({ filename: 'emergency-audio.webm', path: audioPath });
+    if (audioUrl) {
+      mediaLinks.push(`<p><strong>Audio:</strong> <a href="${audioUrl}">Play emergency audio</a></p>`);
     }
 
     const mailOptions = {
@@ -106,10 +106,10 @@ const sendSOSAlert = async (caseData, videoPath, audioPath) => {
           <p><strong>Time:</strong> ${caseData.created_at}</p>
           ${caseData.location_link ? `<p><strong>Location:</strong> <a href="${caseData.location_link}">View on Google Maps</a></p>` : ''}
           ${caseData.notes ? `<p><strong>Notes:</strong> ${caseData.notes}</p>` : ''}
+          ${mediaLinks.join('')}
           <p style="color: #dc2626; font-weight: bold;">Immediate response required.</p>
         </div>
-      `,
-      attachments
+      `
     };
 
     const result = await transporter.sendMail(mailOptions);

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../core/theme.dart';
 import '../core/widgets.dart';
+import '../services/location_service.dart';
 import '../state/auth_provider.dart';
 import 'otp_screen.dart';
 import 'register_screen.dart';
@@ -30,6 +31,33 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _promptEnableLocation() async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enable Location Service'),
+        content: const Text(
+          'Location services (GPS) are turned off. ZELDA needs them to send '
+          'your live location during an emergency. Turn them on to continue.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Not Now'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              await LocationService.openLocationSettings();
+              if (context.mounted) Navigator.of(context).pop(true);
+            },
+            child: const Text('Turn On'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() {
@@ -44,7 +72,19 @@ class _LoginScreenState extends State<LoginScreen> {
           );
       if (!mounted) return;
       final role = context.read<AuthProvider>().user?.role;
-      Navigator.of(context).pushReplacementNamed(role == 'police' ? '/police' : '/dashboard');
+      if (role == 'police') {
+        setState(() => _error = 'Police dashboard is web-only. Please use the web portal to manage cases.');
+        await context.read<AuthProvider>().logout();
+        return;
+      }
+      await LocationService.requestLocationPermission();
+      if (!mounted) return;
+      final enabled = await LocationService.serviceEnabled();
+      if (!enabled) {
+        await _promptEnableLocation();
+      }
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/dashboard');
     } on DioException catch (e) {
       final data = e.response?.data;
       if (data is Map && data['requiresVerification'] == true) {

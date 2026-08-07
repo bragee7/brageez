@@ -26,15 +26,6 @@ const Navbar = () => {
           </Link>
 
           <div className="flex items-center space-x-4">
-            {user?.role === 'user' && (
-              <Link 
-                to="/dashboard" 
-                className="text-gray-600 hover:text-emergency-red transition-colors font-medium"
-              >
-                Dashboard
-              </Link>
-            )}
-            
             {user?.role === 'police' && (
               <Link 
                 to="/police" 

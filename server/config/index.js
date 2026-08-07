@@ -22,11 +22,8 @@ if (fs.existsSync(configPath)) {
 }
 
 const db = {
-  host: config.DB_HOST || process.env.DB_HOST || '127.0.0.1',
-  port: config.DB_PORT || process.env.DB_PORT || 3306,
-  name: config.DB_NAME || process.env.DB_NAME || 'zelda_new',
-  user: config.DB_USER || process.env.DB_USER || 'root',
-  password: config.DB_PASSWORD || process.env.DB_PASSWORD || ''
+  connectionString: config.DATABASE_URL || process.env.DATABASE_URL || '',
+  ssl: config.DB_SSL !== 'false' && (process.env.DB_SSL !== 'false')
 };
 
 const jwt = {
@@ -42,6 +39,11 @@ const email = {
   policeEmail: config.POLICE_EMAIL || process.env.POLICE_EMAIL || 'police@guardian.com'
 };
 
+const supabase = {
+  url: config.SUPABASE_URL || process.env.SUPABASE_URL || '',
+  serviceRoleKey: config.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+};
+
 const server = {
   port: config.PORT || process.env.PORT || 5000
 };
@@ -55,8 +57,12 @@ const validateConfig = () => {
   const required = [];
   const warnings = [];
 
-  if (!db.host || !db.name || !db.user) {
-    warnings.push('Database configuration may be incomplete');
+  if (!db.connectionString) {
+    warnings.push('DATABASE_URL not configured - falling back to process.env');
+  }
+
+  if (!supabase.url || !supabase.serviceRoleKey) {
+    warnings.push('Supabase not fully configured - media uploads will be disabled');
   }
 
   if (!jwt.secret) {
@@ -80,6 +86,7 @@ validateConfig();
 module.exports = {
   config,
   db,
+  supabase,
   jwt,
   email,
   server,

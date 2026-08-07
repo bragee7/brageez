@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,7 @@ import '../models/emergency_contact.dart';
 import '../state/auth_provider.dart';
 import '../state/contacts_provider.dart';
 import '../state/sos_controller.dart';
+import 'alerts_history_screen.dart';
 
 class UserDashboardScreen extends StatefulWidget {
   const UserDashboardScreen({super.key});
@@ -262,6 +264,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
                         _buildStatusCard(sos),
                         const SizedBox(height: 16),
                         _buildVoiceBanner(sos),
+                        _buildCameraSelector(sos),
                         if (sos.isTracking) _buildTrackingBanner(sos),
                         const SizedBox(height: 8),
                         _buildSosButton(sos),
@@ -271,6 +274,8 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
                         ],
                         const SizedBox(height: 16),
                         _buildContactsCard(context, contacts),
+                        const SizedBox(height: 16),
+                        _buildAlertsHistory(),
                         const SizedBox(height: 16),
                         _buildHowItWorks(),
                         if (sos.showPreview &&
@@ -583,6 +588,72 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
             onChanged: (v) => _toggleVoice(sos, v),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCameraSelector(SosController sos) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.gray800,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            const Icon(Icons.videocam_outlined, color: AppColors.purple700, size: 20),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'Recording Camera',
+                style: TextStyle(color: AppColors.gray300, fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ),
+            _cameraOption(sos, CameraLensDirection.back, 'Back', Icons.videocam_outlined),
+            const SizedBox(width: 8),
+            _cameraOption(sos, CameraLensDirection.front, 'Front', Icons.camera_front_outlined),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _cameraOption(
+    SosController sos,
+    CameraLensDirection lens,
+    String label,
+    IconData icon,
+  ) {
+    final selected = sos.selectedLens == lens;
+    return InkWell(
+      onTap: () => sos.setCameraLens(lens),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.purple600 : AppColors.gray900,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? AppColors.purple700 : AppColors.gray700,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: selected ? Colors.white : AppColors.gray400),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.white : AppColors.gray400,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1029,6 +1100,57 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     );
   }
 
+  Widget _buildAlertsHistory() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const AlertsHistoryScreen()),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Ink(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.gray800,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.blue900,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.history_outlined,
+                  color: AppColors.blue400,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Text(
+                  'My Alerts',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: AppColors.gray600, size: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildHowItWorks() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1168,7 +1290,6 @@ class _VideoPreviewState extends State<_VideoPreview> {
     _controller!.initialize().then((_) {
       if (mounted) setState(() {});
       _controller!.setLooping(true);
-      _controller!.play();
     });
   }
 
@@ -1239,7 +1360,9 @@ class _AudioPreviewState extends State<_AudioPreview> {
     _player.onPlayerStateChanged.listen((state) {
       if (mounted) setState(() => _playing = state == PlayerState.playing);
     });
-    _player.setSourceDeviceFile(widget.path);
+    _player.setSourceDeviceFile(widget.path).then((_) {
+      if (mounted) _player.resume();
+    });
   }
 
   @override

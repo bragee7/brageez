@@ -9,7 +9,7 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
   try {
     const contacts = await query(
-      'SELECT * FROM `contacts table` WHERE user_id = ? ORDER BY created_at DESC',
+      'SELECT * FROM contacts WHERE user_id = $1 ORDER BY created_at DESC',
       [req.user.userId]
     );
     res.json({ contacts });
@@ -28,15 +28,15 @@ router.post('/', async (req, res) => {
     }
 
     const result = await query(
-      `INSERT INTO \`contacts table\` (user_id, name, phone, email, relation, created_at, updated_at) 
-       VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
+      `INSERT INTO contacts (user_id, name, phone, email, relation, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, now(), now()) RETURNING id`,
       [req.user.userId, name, phone, email || '', relation || '']
     );
 
     await auditLog(req.user.userId, null, 'CONTACT_ADDED', `Contact added: ${name} (${phone})`);
 
     const newContact = {
-      id: result.insertId,
+      id: result[0].id,
       user_id: req.user.userId,
       name,
       phone,
@@ -56,7 +56,7 @@ router.put('/:id', async (req, res) => {
     const { name, phone, email, relation } = req.body;
 
     const existing = await query(
-      'SELECT * FROM `contacts table` WHERE id = ? AND user_id = ?',
+      'SELECT * FROM contacts WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
 
@@ -65,7 +65,7 @@ router.put('/:id', async (req, res) => {
     }
 
     await query(
-      'UPDATE `contacts table` SET name = ?, phone = ?, email = ?, relation = ?, updated_at = NOW() WHERE id = ? AND user_id = ?',
+      'UPDATE contacts SET name = $1, phone = $2, email = $3, relation = $4, updated_at = now() WHERE id = $5 AND user_id = $6',
       [name || existing[0].name, phone || existing[0].phone, email !== undefined ? email : existing[0].email, relation !== undefined ? relation : existing[0].relation, req.params.id, req.user.userId]
     );
 
@@ -81,7 +81,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const existing = await query(
-      'SELECT * FROM `contacts table` WHERE id = ? AND user_id = ?',
+      'SELECT * FROM contacts WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
 
@@ -90,7 +90,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     await query(
-      'DELETE FROM `contacts table` WHERE id = ? AND user_id = ?',
+      'DELETE FROM contacts WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
 

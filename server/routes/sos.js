@@ -1,32 +1,16 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { authMiddleware } = require('../middleware/auth');
 const { query, auditLog } = require('../db');
+const { supabase, MEDIA_BUCKET } = require('../supabase');
 const { emitNewCase, emitCaseUpdated } = require('../socket');
 const emailService = require('../services/email');
 
 const router = express.Router();
-const uploadsDir = path.join(__dirname, '../uploads');
-
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${uuidv4()}-${Date.now()}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  }
-});
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 100 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedMime = /^(video|audio)\//;
@@ -48,9 +32,38 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
-const notifySOS = async (caseForEmail, videoFilePath, audioFilePath, userId) => {
+const extname = (mimetype) => {
+  if (mimetype.startsWith('video/')) {
+    if (mimetype.includes('mp4')) return '.mp4';
+    if (mimetype.includes('quicktime')) return '.mov';
+    return '.webm';
+  }
+  if (mimetype.startsWith('audio/')) return '.webm';
+  return '.bin';
+};
+
+const uploadMedia = async (file) => {
+  if (!file) return null;
+  const fileName = `${uuidv4()}${extname(file.mimetype)}`;
+  const { error } = await supabase.storage
+    .from(MEDIA_BUCKET)
+    .upload(fileName, file.buffer, {
+      contentType: file.mimetype,
+      upsert: false
+    });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage
+    .from(MEDIA_BUCKET)
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+};
+
+const notifySOS = async (caseForEmail, videoUrl, audioUrl, userId) => {
   try {
-    const emailResult = await emailService.sendSOSAlert(caseForEmail, videoFilePath, audioFilePath);
+    const emailResult = await emailService.sendSOSAlert(caseForEmail, videoUrl, audioUrl);
 
     if (emailResult.success) {
       await auditLog(userId, caseForEmail.id, 'EMAIL_SENT', `SOS alert email sent to police: ${emailResult.messageId}`);
@@ -59,7 +72,7 @@ const notifySOS = async (caseForEmail, videoFilePath, audioFilePath, userId) => 
     }
 
     const contacts = await query(
-      'SELECT * FROM `contacts table` WHERE user_id = ?',
+      'SELECT * FROM contacts WHERE user_id = $1',
       [userId]
     );
 
@@ -89,26 +102,31 @@ router.post('/', authMiddleware, (req, res, next) => {
 }, async (req, res) => {
   try {
     const { locationLink, latitude, longitude, notes } = req.body;
-    
+
     const latValue = latitude && latitude.trim() ? String(latitude).trim() : null;
     const lngValue = longitude && longitude.trim() ? String(longitude).trim() : null;
     const locValue = locationLink && locationLink.trim() ? String(locationLink).trim() : null;
-    
+
     if (!req.user) {
       return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (req.user.role === 'police') {
+      return res.status(403).json({ error: 'Police accounts cannot create SOS cases' });
     }
 
     const videoFile = req.files?.video?.[0];
     const audioFile = req.files?.audio?.[0];
 
-    const videoUrl = videoFile ? `/uploads/${videoFile.filename}` : null;
-    const audioUrl = audioFile ? `/uploads/${audioFile.filename}` : null;
+    const videoUrl = await uploadMedia(videoFile);
+    const audioUrl = await uploadMedia(audioFile);
+
     const createdAt = new Date();
     const updatedAt = new Date();
 
     const result = await query(
-      `INSERT INTO \`sos cases table\` (user_id, user_email, location_link, latitude, longitude, status, notes, video_url, audio_url, trigger_type, created_at, updated_at) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO sos_cases (user_id, user_email, location_link, latitude, longitude, status, notes, video_url, audio_url, trigger_type, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
       [
         req.user.userId,
         req.user.email,
@@ -125,7 +143,7 @@ router.post('/', authMiddleware, (req, res, next) => {
       ]
     );
 
-    const insertId = result.insertId;
+    const insertId = result[0].id;
 
     await auditLog(req.user.userId, insertId, 'SOS_CREATED', `SOS alert created by user ${req.user.email}`);
 
@@ -139,10 +157,7 @@ router.post('/', authMiddleware, (req, res, next) => {
       created_at: createdAt
     };
 
-    const videoFilePath = videoFile ? path.join(uploadsDir, videoFile.filename) : null;
-    const audioFilePath = audioFile ? path.join(uploadsDir, audioFile.filename) : null;
-
-    notifySOS(caseForEmail, videoFilePath, audioFilePath, req.user.userId);
+    notifySOS(caseForEmail, videoUrl, audioUrl, req.user.userId);
 
     const newCase = {
       id: insertId,
@@ -169,45 +184,72 @@ router.post('/', authMiddleware, (req, res, next) => {
   }
 });
 
+const mapCase = (c) => ({
+  id: c.id,
+  userId: c.user_id,
+  userEmail: c.user_email,
+  locationLink: c.location_link,
+  latitude: c.latitude,
+  longitude: c.longitude,
+  status: c.status,
+  notes: c.notes,
+  videoUrl: c.video_url,
+  audioUrl: c.audio_url,
+  triggerType: c.trigger_type,
+  timestamp: c.created_at,
+  createdAt: c.created_at,
+  updatedAt: c.updated_at
+});
+
 router.get('/', authMiddleware, async (req, res) => {
   try {
     let cases;
-    
+
     if (req.user.role === 'police') {
-      cases = await query('SELECT * FROM `sos cases table` ORDER BY created_at DESC');
+      cases = await query('SELECT * FROM sos_cases ORDER BY created_at DESC');
     } else {
-      cases = await query('SELECT * FROM `sos cases table` WHERE user_id = ? ORDER BY created_at DESC', [req.user.userId]);
+      cases = await query('SELECT * FROM sos_cases WHERE user_id = $1 ORDER BY created_at DESC', [req.user.userId]);
     }
 
-    const mappedCases = cases.map(c => ({
-      id: c.id,
-      userId: c.user_id,
-      userEmail: c.user_email,
-      locationLink: c.location_link,
-      latitude: c.latitude,
-      longitude: c.longitude,
-      status: c.status,
-      notes: c.notes,
-      videoUrl: c.video_url,
-      audioUrl: c.audio_url,
-      triggerType: c.trigger_type,
-      timestamp: c.created_at,
-      createdAt: c.created_at,
-      updatedAt: c.updated_at
-    }));
-
-    res.json({ cases: mappedCases });
+    res.json({ cases: cases.map(mapCase) });
   } catch (error) {
     console.error('Get cases error:', error);
     res.status(500).json({ error: 'Error fetching cases' });
   }
 });
 
+router.get('/test-email', async (req, res) => {
+  try {
+    const result = await emailService.sendTestEmail();
+    if (result.success) {
+      res.json({
+        status: 'success',
+        message: 'Email configuration is valid',
+        config: {
+          host: emailService.isEmailConfigured() ? 'configured' : 'not configured',
+          policeEmail: require('../config').email.policeEmail
+        }
+      });
+    } else {
+      res.status(400).json({
+        status: 'error',
+        message: result.error,
+        config: {
+          host: 'configured but invalid',
+          policeEmail: require('../config').email.policeEmail
+        }
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
-    const cases = await query('SELECT * FROM `sos cases table` WHERE id = ?', [req.params.id]);
+    const cases = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
     const caseData = cases[0];
-    
+
     if (!caseData) {
       return res.status(404).json({ error: 'Case not found' });
     }
@@ -216,24 +258,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    const mappedCase = {
-      id: caseData.id,
-      userId: caseData.user_id,
-      userEmail: caseData.user_email,
-      locationLink: caseData.location_link,
-      latitude: caseData.latitude,
-      longitude: caseData.longitude,
-      status: caseData.status,
-      notes: caseData.notes,
-      videoUrl: caseData.video_url,
-      audioUrl: caseData.audio_url,
-      triggerType: caseData.trigger_type,
-      timestamp: caseData.created_at,
-      createdAt: caseData.created_at,
-      updatedAt: caseData.updated_at
-    };
-
-    res.json({ case: mappedCase });
+    res.json({ case: mapCase(caseData) });
   } catch (error) {
     console.error('Get case error:', error);
     res.status(500).json({ error: 'Error fetching case' });
@@ -242,12 +267,16 @@ router.get('/:id', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
+    if (req.user.role !== 'police') {
+      return res.status(403).json({ error: 'Only police can update case status and notes' });
+    }
+
     const { status, notes } = req.body;
     const updatedAt = new Date();
 
-    const existingCases = await query('SELECT * FROM `sos cases table` WHERE id = ?', [req.params.id]);
+    const existingCases = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
     const existingCase = existingCases[0];
-    
+
     if (!existingCase) {
       return res.status(404).json({ error: 'Case not found' });
     }
@@ -268,28 +297,13 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 
     await query(
-      'UPDATE `sos cases table` SET status = ?, notes = ?, updated_at = ? WHERE id = ?',
+      'UPDATE sos_cases SET status = $1, notes = $2, updated_at = $3 WHERE id = $4',
       [newStatus, notesUpdate, updatedAt, req.params.id]
     );
 
-    const updatedCases = await query('SELECT * FROM `sos cases table` WHERE id = ?', [req.params.id]);
-    const updatedCase = updatedCases[0];
+    const updatedCases = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
 
-    const mappedCase = {
-      id: updatedCase.id,
-      userId: updatedCase.user_id,
-      userEmail: updatedCase.user_email,
-      locationLink: updatedCase.location_link,
-      latitude: updatedCase.latitude,
-      longitude: updatedCase.longitude,
-      status: updatedCase.status,
-      notes: updatedCase.notes,
-      videoUrl: updatedCase.video_url,
-      audioUrl: updatedCase.audio_url,
-      timestamp: updatedCase.created_at,
-      createdAt: updatedCase.created_at,
-      updatedAt: updatedCase.updated_at
-    };
+    const mappedCase = mapCase(updatedCases[0]);
 
     emitCaseUpdated(mappedCase);
 
@@ -307,7 +321,7 @@ router.put('/:id/location', authMiddleware, async (req, res) => {
   try {
     const { latitude, longitude, locationLink } = req.body;
 
-    const existingCases = await query('SELECT * FROM `sos cases table` WHERE id = ?', [req.params.id]);
+    const existingCases = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
     const existingCase = existingCases[0];
 
     if (!existingCase) {
@@ -328,7 +342,7 @@ router.put('/:id/location', authMiddleware, async (req, res) => {
     const updatedAt = new Date();
 
     await query(
-      'UPDATE `sos cases table` SET latitude = ?, longitude = ?, location_link = ?, updated_at = ? WHERE id = ?',
+      'UPDATE sos_cases SET latitude = $1, longitude = $2, location_link = $3, updated_at = $4 WHERE id = $5',
       [latValue, lngValue, locValue, updatedAt, req.params.id]
     );
 
@@ -344,33 +358,6 @@ router.put('/:id/location', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Update location error:', error);
     res.status(500).json({ error: 'Error updating location' });
-  }
-});
-
-router.get('/test-email', async (req, res) => {
-  try {
-    const result = await emailService.sendTestEmail();
-    if (result.success) {
-      res.json({ 
-        status: 'success', 
-        message: 'Email configuration is valid',
-        config: {
-          host: emailService.isEmailConfigured() ? 'configured' : 'not configured',
-          policeEmail: require('../config').email.policeEmail
-        }
-      });
-    } else {
-      res.status(400).json({ 
-        status: 'error', 
-        message: result.error,
-        config: {
-          host: 'configured but invalid',
-          policeEmail: require('../config').email.policeEmail
-        }
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
   }
 });
 

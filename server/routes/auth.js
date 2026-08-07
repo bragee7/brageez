@@ -18,12 +18,12 @@ const generateGuardianEmail = async (name) => {
   if (!base || base.length < 3) base = 'user';
 
   let guardianEmail = base + '@guardian.com';
-  const existing = await query('SELECT * FROM `users table` WHERE Email = ?', [guardianEmail]);
+  const existing = await query('SELECT * FROM users WHERE email = $1', [guardianEmail]);
   if (existing.length === 0) return guardianEmail;
 
   for (let i = 1; i < 100; i++) {
     guardianEmail = base + i + '@guardian.com';
-    const found = await query('SELECT * FROM `users table` WHERE Email = ?', [guardianEmail]);
+    const found = await query('SELECT * FROM users WHERE email = $1', [guardianEmail]);
     if (found.length === 0) return guardianEmail;
   }
 
@@ -32,7 +32,7 @@ const generateGuardianEmail = async (name) => {
 
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const users = await query('SELECT * FROM `users table` WHERE id = ?', [req.user.userId]);
+    const users = await query('SELECT * FROM users WHERE id = $1', [req.user.userId]);
     const user = users[0];
 
     if (!user) {
@@ -42,9 +42,9 @@ router.get('/me', authMiddleware, async (req, res) => {
     res.json({
       user: {
         id: user.id,
-        name: user.Name,
-        email: user.Email,
-        role: user.Role
+        name: user.name,
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {
@@ -65,11 +65,11 @@ router.post('/register', async (req, res) => {
       return res.status(403).json({ error: 'Police accounts cannot be self-registered' });
     }
 
-    const existingByPersonalEmail = await query('SELECT * FROM `users table` WHERE PersonalEmail = ?', [personalEmail]);
+    const existingByPersonalEmail = await query('SELECT * FROM users WHERE personal_email = $1', [personalEmail]);
     const existingPersonalUser = existingByPersonalEmail[0];
 
     if (existingPersonalUser) {
-      if (existingPersonalUser.isVerified) {
+      if (existingPersonalUser.is_verified) {
         return res.status(400).json({ error: 'This personal email is already registered. Please login with your Guardian ID.' });
       }
 
@@ -78,7 +78,7 @@ router.post('/register', async (req, res) => {
       const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
       await query(
-        'UPDATE `users table` SET Name = ?, Email = ?, Password = ?, Role = ?, Updated_at = NOW(), otp = ?, otpExpiry = ? WHERE id = ?',
+        'UPDATE users SET name = $1, email = $2, password = $3, role = $4, updated_at = now(), otp = $5, otp_expiry = $6 WHERE id = $7',
         [name, newGuardianEmail, await bcrypt.hash(password, 10), 'user', otp, otpExpiry, existingPersonalUser.id]
       );
 
@@ -99,11 +99,12 @@ router.post('/register', async (req, res) => {
     const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
     const result = await query(
-      'INSERT INTO `users table` (Name, Email, PersonalEmail, Password, Role, Created_at, Updated_at, isVerified, otp, otpExpiry) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), FALSE, ?, ?)',
+      `INSERT INTO users (name, email, personal_email, password, role, created_at, updated_at, is_verified, otp, otp_expiry)
+       VALUES ($1, $2, $3, $4, $5, now(), now(), false, $6, $7) RETURNING id`,
       [name, guardianEmail, personalEmail, hashedPassword, userRole, otp, otpExpiry]
     );
 
-    const insertId = result.insertId;
+    const insertId = result[0].id;
 
     await auditLog(insertId, null, 'USER_REGISTERED', `New user registered: ${guardianEmail} (via ${personalEmail}) - pending verification`);
 
@@ -129,14 +130,14 @@ router.post('/verify-otp', async (req, res) => {
       return res.status(400).json({ error: 'Personal email and OTP are required' });
     }
 
-    const users = await query('SELECT * FROM `users table` WHERE PersonalEmail = ?', [personalEmail]);
+    const users = await query('SELECT * FROM users WHERE personal_email = $1', [personalEmail]);
     const user = users[0];
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (user.isVerified) {
+    if (user.is_verified) {
       return res.status(400).json({ error: 'Email already verified. Please login.' });
     }
 
@@ -145,22 +146,22 @@ router.post('/verify-otp', async (req, res) => {
     }
 
     const now = new Date();
-    const expiry = new Date(user.otpExpiry);
+    const expiry = new Date(user.otp_expiry);
     if (now > expiry) {
       return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
     }
 
     await query(
-      'UPDATE `users table` SET isVerified = TRUE, otp = NULL, otpExpiry = NULL, Updated_at = NOW() WHERE id = ?',
+      'UPDATE users SET is_verified = true, otp = NULL, otp_expiry = NULL, updated_at = now() WHERE id = $1',
       [user.id]
     );
 
-    await auditLog(user.id, null, 'EMAIL_VERIFIED', `Personal email verified: ${personalEmail} for guardian: ${user.Email}`);
+    await auditLog(user.id, null, 'EMAIL_VERIFIED', `Personal email verified: ${personalEmail} for guardian: ${user.email}`);
 
     res.json({
       message: 'Email verified successfully! You can now login with your Guardian ID.',
       verified: true,
-      guardianEmail: user.Email
+      guardianEmail: user.email
     });
   } catch (error) {
     console.error('Verify OTP error:', error);
@@ -176,14 +177,14 @@ router.post('/resend-otp', async (req, res) => {
       return res.status(400).json({ error: 'Personal email is required' });
     }
 
-    const users = await query('SELECT * FROM `users table` WHERE PersonalEmail = ?', [personalEmail]);
+    const users = await query('SELECT * FROM users WHERE personal_email = $1', [personalEmail]);
     const user = users[0];
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (user.isVerified) {
+    if (user.is_verified) {
       return res.status(400).json({ error: 'Email already verified. Please login.' });
     }
 
@@ -191,11 +192,11 @@ router.post('/resend-otp', async (req, res) => {
     const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
     await query(
-      'UPDATE `users table` SET otp = ?, otpExpiry = ?, Updated_at = NOW() WHERE id = ?',
+      'UPDATE users SET otp = $1, otp_expiry = $2, updated_at = now() WHERE id = $3',
       [otp, otpExpiry, user.id]
     );
 
-    emailService.sendOTPEmail(personalEmail, user.Name, otp).catch(() => {});
+    emailService.sendOTPEmail(personalEmail, user.name, otp).catch(() => {});
 
     res.json({
       message: 'New OTP sent to your personal email'
@@ -214,40 +215,40 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Guardian ID and password are required' });
     }
 
-    const users = await query('SELECT * FROM `users table` WHERE Email = ?', [email]);
+    const users = await query('SELECT * FROM users WHERE email = $1', [email]);
     const user = users[0];
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid Guardian ID or password' });
     }
 
-    if (!user.isVerified) {
+    if (!user.is_verified) {
       const otp = generateOTP();
       const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
       await query(
-        'UPDATE `users table` SET otp = ?, otpExpiry = ?, Updated_at = NOW() WHERE id = ?',
+        'UPDATE users SET otp = $1, otp_expiry = $2, updated_at = now() WHERE id = $3',
         [otp, otpExpiry, user.id]
       );
 
-      emailService.sendOTPEmail(user.PersonalEmail, user.Name, otp).catch(() => {});
+      emailService.sendOTPEmail(user.personal_email, user.name, otp).catch(() => {});
 
       return res.status(403).json({
         error: 'Please verify your email first. A new OTP has been sent to your personal email.',
         requiresVerification: true,
-        personalEmail: user.PersonalEmail
+        personalEmail: user.personal_email
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.Password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid Guardian ID or password' });
     }
 
-    await auditLog(user.id, null, 'USER_LOGIN', `User logged in: ${email} (Role: ${user.Role})`);
+    await auditLog(user.id, null, 'USER_LOGIN', `User logged in: ${email} (Role: ${user.role})`);
 
     const token = jwt.sign(
-      { userId: user.id, email: user.Email, role: user.Role },
+      { userId: user.id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -257,9 +258,9 @@ router.post('/login', async (req, res) => {
       token,
       user: {
         id: user.id,
-        name: user.Name,
-        email: user.Email,
-        role: user.Role
+        name: user.name,
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,7 +9,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,7 +26,12 @@ const Login = () => {
     try {
       const response = await authAPI.login(formData);
       login(response.data.user, response.data.token);
-      navigate(response.data.user.role === 'police' ? '/police' : '/dashboard');
+      if (response.data.user.role !== 'police') {
+        setError('This portal is for police only. Please use the ZELDA mobile app to access the user dashboard.');
+        logout();
+        return;
+      }
+      navigate('/police');
     } catch (err) {
       const errData = err.response?.data;
       if (errData?.requiresVerification) {
@@ -134,26 +139,18 @@ const Login = () => {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-pink-600 hover:text-pink-700 font-semibold">
-              Register here
-            </Link>
+          <p className="text-gray-600 text-sm">
+            Users: use the <span className="font-semibold text-pink-600">ZELDA mobile app</span> to access your dashboard and SOS features.
           </p>
         </div>
 
         <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center mb-4">Demo Accounts (pre-verified):</p>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="bg-blue-50 p-3 rounded-lg">
+          <p className="text-xs text-gray-500 text-center mb-4">Police Demo Account (pre-verified):</p>
+          <div className="grid grid-cols-1 gap-3 text-xs">
+            <div className="bg-blue-50 p-3 rounded-lg text-center">
               <p className="font-semibold text-police-blue">Police</p>
               <p className="text-gray-600">police@guardian.com</p>
               <p className="text-gray-600">police123</p>
-            </div>
-            <div className="bg-pink-50 p-3 rounded-lg">
-              <p className="font-semibold text-pink-600">User</p>
-              <p className="text-gray-600">user@guardian.com</p>
-              <p className="text-gray-600">user123</p>
             </div>
           </div>
         </div>
