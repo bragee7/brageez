@@ -1,12 +1,14 @@
 class AppConfig {
+  static const String _prodBase = 'https://zelda-api-kbtl.onrender.com';
+
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:5000',
+    defaultValue: _prodBase,
   );
 
   static const String mediaBaseUrl = String.fromEnvironment(
     'MEDIA_BASE_URL',
-    defaultValue: 'http://10.0.2.2:5000',
+    defaultValue: _prodBase,
   );
 
   static String mediaUrl(String? path) {

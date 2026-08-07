@@ -54,8 +54,12 @@ flutter pub get
 flutter run
 ```
 
-To point the app at a different backend, edit the base URL in
-`lib/services/api_client.dart` (uses `10.0.2.2` for the Android emulator by default).
+To point the app at a different backend, override the base URL at build time
+(uses `https://zelda-api-kbtl.onrender.com` by default):
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:5000
+```
 
 ### Voice service prerequisites on emulator
 - `RECORD_AUDIO` and `POST_NOTIFICATIONS` runtime permissions. Grant manually if
