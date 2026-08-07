@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_URL = '/api';
-const MEDIA_URL = 'http://localhost:5000';
+const MEDIA_URL = '';
 
 const api = axios.create({
   baseURL: API_URL,
