@@ -3,12 +3,14 @@ const config = require('./config');
 
 const MEDIA_BUCKET = 'sos-media';
 
+// Prefer service_role (bypasses RLS); fall back to anon key + storage policies.
+const key = config.supabase.serviceRoleKey || config.supabase.anonKey;
 let supabase = null;
 
-if (config.supabase.url && config.supabase.serviceRoleKey) {
+if (config.supabase.url && key) {
   supabase = createClient(
     config.supabase.url,
-    config.supabase.serviceRoleKey,
+    key,
     { auth: { persistSession: false } }
   );
 } else {

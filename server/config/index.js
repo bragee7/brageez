@@ -41,7 +41,8 @@ const email = {
 
 const supabase = {
   url: config.SUPABASE_URL || process.env.SUPABASE_URL || '',
-  serviceRoleKey: config.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  serviceRoleKey: config.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  anonKey: config.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || ''
 };
 
 const server = {
@@ -61,7 +62,7 @@ const validateConfig = () => {
     warnings.push('DATABASE_URL not configured - falling back to process.env');
   }
 
-  if (!supabase.url || !supabase.serviceRoleKey) {
+  if (!supabase.url || (!supabase.serviceRoleKey && !supabase.anonKey)) {
     warnings.push('Supabase not fully configured - media uploads will be disabled');
   }
 

@@ -51,9 +51,10 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/config-status', (req, res) => {
+  const supabaseConfigured = config.supabase.url && (config.supabase.serviceRoleKey || config.supabase.anonKey);
   res.json({
     database: config.db.connectionString ? '✅ Connected' : '❌ Not configured',
-    supabase: config.supabase.url && config.supabase.serviceRoleKey ? '✅ Configured' : '❌ Not configured',
+    supabase: supabaseConfigured ? '✅ Configured' : '❌ Not configured',
     jwt: config.jwt.secret ? '✅ Configured' : '❌ Not configured',
     email: config.email.user && config.email.pass ? '✅ Configured' : '⚠️ Not configured (SOS emails will not be sent)',
     policeEmail: config.email.policeEmail || 'Not set'
