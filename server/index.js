@@ -93,6 +93,24 @@ app.get('/api/debug-smtp', async (req, res) => {
   const a6 = (result.dns && Array.isArray(result.dns.a6) && result.dns.a6[0]) || null;
   result.v6connect = a6 ? await tryConnect(a6, 6) : 'no AAAA record';
 
+  const probes = {};
+  const probe = async (label, host, port) => {
+    const sock = new net.Socket();
+    const done = (ok, info) => { sock.destroy(); probes[label] = { ok, info }; };
+    sock.setTimeout(4000);
+    sock.once('connect', () => done(true, 'connected'));
+    sock.once('timeout', () => done(false, 'timeout'));
+    sock.once('error', (e) => done(false, e.code || e.message));
+    sock.connect(port, host, () => {});
+    await new Promise(r => setTimeout(r, 5000));
+  };
+  await probe('gmail_465', a4, 465);
+  await probe('gmail_587_retry', a4, 587);
+  const sg = await new Promise((resolve) => dnsLib.resolve4('smtp.sendgrid.net', (e, a) => resolve(e ? null : (a[0] || null))));
+  await probe('sendgrid_587', sg || 'smtp.sendgrid.net', 587);
+  await probe('sendgrid_2525', sg || 'smtp.sendgrid.net', 2525);
+  result.probes = probes;
+
   res.json(result);
 });
 
