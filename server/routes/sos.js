@@ -44,6 +44,7 @@ const extname = (mimetype) => {
 
 const uploadMedia = async (file) => {
   if (!file) return null;
+  if (!supabase) return null;
   const fileName = `${uuidv4()}${extname(file.mimetype)}`;
   const { error } = await supabase.storage
     .from(MEDIA_BUCKET)
