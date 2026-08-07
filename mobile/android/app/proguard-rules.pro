@@ -1,0 +1,6 @@
+-dontwarn java.awt.**
+-keep class com.sun.jna.** { *; }
+-keepclassmembers class com.sun.jna.** { *; }
+-keep interface com.sun.jna.** { *; }
+-keep class org.vosk.** { *; }
+-keepclassmembers class org.vosk.** { *; }
