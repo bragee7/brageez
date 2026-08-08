@@ -1,5 +1,8 @@
 const express = require('express');
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const { authMiddleware } = require('../middleware/auth');
 const { query, auditLog } = require('../db');
@@ -10,8 +13,17 @@ const emailService = require('../services/email');
 const router = express.Router();
 
 const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 100 * 1024 * 1024 },
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const dir = path.join(os.tmpdir(), 'zelda-uploads');
+      fs.mkdirSync(dir, { recursive: true });
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${uuidv4()}-${Date.now()}`);
+    }
+  }),
+  limits: { fileSize: 200 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedMime = /^(video|audio)\//;
     if (allowedMime.test(file.mimetype)) {
@@ -46,12 +58,18 @@ const uploadMedia = async (file) => {
   if (!file) return null;
   if (!supabase) return null;
   const fileName = `${uuidv4()}${extname(file.mimetype)}`;
+  const fileSize = file.size || 0;
   const { error } = await supabase.storage
     .from(MEDIA_BUCKET)
-    .upload(fileName, file.buffer, {
+    .upload(fileName, fs.createReadStream(file.path), {
       contentType: file.mimetype,
-      upsert: false
+      upsert: false,
+      duplex: fileSize > 0 ? 'half' : undefined
     });
+
+  try {
+    fs.unlink(file.path, () => {});
+  } catch (_) {}
 
   if (error) throw error;
 

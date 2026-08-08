@@ -1,43 +1,33 @@
-# Render service definition (import this file in Render dashboard, or `render deploy --service-id` via deploy script)
-# Sensitive values come from secrets you create in: Render dashboard → Service → Environment → Secrets
+# Render blueprint for the ZELDA backend + web client.
+# The live service is zelda-api-kbtl (repo bragee7/z111111), auto-deploy on push to main.
+# This file is kept in sync with that deployment so it can be recreated/audited.
 services:
   - type: web
-    name: women-safety-api
-    runtime: docker
-    region: oregon
+    name: zelda-api
+    runtime: node
     plan: free
-    dockerfilePath: ./server/Dockerfile
-    build:
-      context: ./server
+    region: oregon
+    buildCommand: npm ci --omit=dev
+    startCommand: node server/index.js
     healthCheckPath: /api/health
     envVars:
-      - key: PORT
-        value: 5000
-      - key: DB_HOST
-        value: db4free.net
-      - key: DB_PORT
-        value: 3306
-      - key: DB_NAME
-        value: zelda_new
-      - key: DB_USER
-        fromSecret: DB_USER
-      - key: DB_PASSWORD
-        fromSecret: DB_PASSWORD
+      - key: DATABASE_URL
+        fromSecret: DATABASE_URL
+      - key: SUPABASE_URL
+        fromSecret: SUPABASE_URL
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        fromSecret: SUPABASE_SERVICE_ROLE_KEY
+      - key: SUPABASE_ANON_KEY
+        fromSecret: SUPABASE_ANON_KEY
       - key: JWT_SECRET
         fromSecret: JWT_SECRET
-      - key: EMAIL_USER
-        fromSecret: EMAIL_USER
-      - key: EMAIL_PASS
-        fromSecret: EMAIL_PASS
-      - key: EMAIL_HOST
-        value: smtp.gmail.com
-      - key: EMAIL_PORT
-        value: 587
+      - key: SENDGRID_API_KEY
+        fromSecret: SENDGRID_API_KEY
       - key: EMAIL_FROM
         value: ZELDA <zyracmt@gmail.com>
       - key: POLICE_EMAIL
         value: police@guardian.com
       - key: CLIENT_URL
-        value: https://women-safety-api.onrender.com
+        value: https://zelda-api-kbtl.onrender.com
       - key: API_URL
-        value: https://women-safety-api.onrender.com
+        value: https://zelda-api-kbtl.onrender.com

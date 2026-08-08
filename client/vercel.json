@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://zenew-1.onrender.com/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "https://zenew-1.onrender.com/uploads/:path*" },
+    { "source": "/api/:path*", "destination": "https://zelda-api-kbtl.onrender.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://zelda-api-kbtl.onrender.com/uploads/:path*" },
     { "source": "/((?!api|uploads/).*)", "destination": "/index.html" }
   ]
 }

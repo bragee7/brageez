@@ -13,8 +13,9 @@ class ApiClient {
   ApiClient._()
       : dio = Dio(BaseOptions(
           baseUrl: AppConfig.apiBaseUrl,
-          connectTimeout: const Duration(seconds: 20),
-          receiveTimeout: const Duration(seconds: 120),
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 180),
+          sendTimeout: const Duration(seconds: 180),
           headers: {'Content-Type': 'application/json'},
         )) {
     dio.interceptors.add(InterceptorsWrapper(

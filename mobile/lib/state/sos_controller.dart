@@ -218,7 +218,7 @@ class SosController extends ChangeNotifier {
       );
 
       _cameraController?.dispose();
-      _cameraController = CameraController(camera, ResolutionPreset.high, enableAudio: true);
+      _cameraController = CameraController(camera, ResolutionPreset.medium, enableAudio: true);
       await _cameraController!.initialize();
       _cameraInitialized = true;
       notifyListeners();
