@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vosk_flutter_service/vosk_flutter_service.dart';
 
 import 'model_extractor.dart';
@@ -32,18 +35,13 @@ class VoiceGuardService {
   static final _statusController = StreamController<bool>.broadcast();
   static final _errorController = StreamController<String>.broadcast();
 
-  static DateTime _lastDetection = DateTime.fromMillisecondsSinceEpoch(0);
+  static bool _notificationsReady = false;
 
-  /// Minimum time between two SOS triggers from the same keyword utterance.
-  static const _triggerCooldown = Duration(seconds: 20);
-
-  static Stream<String> get detections => _detectionController.stream;
-  static Stream<bool> get statusStream => _statusController.stream;
-  static Stream<String> get errors => _errorController.stream;
-
-  static bool _configured = false;
-
-  static Future<void> initialize() async {
+  /// Ensure the local notifications plugin is initialized in the CURRENT
+  /// isolate (statics are per-isolate, so the background isolate needs its own
+  /// init before it can post notifications).
+  static Future<void> _ensureNotificationsInitialized() async {
+    if (_notificationsReady) return;
     await _notifications.initialize(
       settings: const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -60,6 +58,89 @@ class VoiceGuardService {
             importance: Importance.high,
           ),
         );
+    _notificationsReady = true;
+  }
+
+  static DateTime _lastTriggeredAt = DateTime.fromMillisecondsSinceEpoch(0);
+  static String? _lastTriggeredKeyword;
+
+  /// Dedupe window: stops the SAME utterance from firing twice (partial result
+  /// then final result of one "help me"). A new utterance after this window, or
+  /// after a cancel/reset, triggers again with no limit.
+  static const _dedupeWindow = Duration(seconds: 2);
+
+  static const _enabledPrefKey = 'zelda_voice_guard_enabled';
+  static const _resetCooldownEvent = 'reset_cooldown';
+  static const _setForegroundEvent = 'set_foreground';
+  static const _serviceReadyEvent = 'service_ready';
+  static const _pendingTriggerKey = 'zelda_pending_sos_trigger';
+
+  static bool _appInForeground = true;
+
+  /// Reset the trigger dedupe in the background isolate so a NEW utterance of
+  /// the keyword can trigger SOS again immediately (after cancel/finish).
+  /// Best-effort: even if this cross-isolate event is ever lost, the short
+  /// [_dedupeWindow] self-heals within a few seconds.
+  static void resetDetectionCooldown() {
+    _service.invoke(_resetCooldownEvent);
+  }
+
+  /// Record that an emergency phrase was detected by the background isolate so
+  /// that if the app is woken from the full-screen notification the SOS can be
+  /// triggered even if the detection event itself was lost while the main
+  /// isolate was dead/paused.
+  static Future<void> _markPendingTrigger() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_pendingTriggerKey, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  static Future<void> _clearPendingTrigger() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_pendingTriggerKey);
+  }
+
+  /// Consume a pending SOS trigger (set by the background isolate) if it is
+  /// still fresh. Returns true when a trigger was fired. Called after the UI
+  /// has subscribed to [detections] so the event is not lost on cold start.
+  static Future<bool> consumePendingTrigger() async {
+    final prefs = await SharedPreferences.getInstance();
+    final ts = prefs.getInt(_pendingTriggerKey);
+    if (ts == null) return false;
+    await _clearPendingTrigger();
+    final age = DateTime.now().millisecondsSinceEpoch - ts;
+    if (age < 0 || age > 60000) return false; // stale
+    developer.log(
+      'Firing pending SOS trigger from background',
+      name: 'VoiceGuard',
+    );
+    _detectionController.add(VoiceGuardService.keywords.first);
+    return true;
+  }
+
+  static Future<void> _firePendingTriggerIfRecent() async {
+    await consumePendingTrigger();
+  }
+
+  static Future<bool> wasEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_enabledPrefKey) ?? false;
+  }
+
+  static Future<void> setEnabledPref(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_enabledPrefKey, enabled);
+  }
+
+  static Stream<String> get detections => _detectionController.stream;
+  static Stream<bool> get statusStream => _statusController.stream;
+  static Stream<String> get errors => _errorController.stream;
+
+  static bool _configured = false;
+
+  static Future<void> initialize() async {
+    await _ensureNotificationsInitialized();
+
+    WidgetsBinding.instance.addObserver(_LifecycleObserver());
 
     if (_configured) return;
     _configured = true;
@@ -68,7 +149,7 @@ class VoiceGuardService {
       androidConfiguration: AndroidConfiguration(
         onStart: _onStart,
         autoStart: false,
-        autoStartOnBoot: false,
+        autoStartOnBoot: true,
         isForegroundMode: true,
         notificationChannelId: notificationChannelId,
         initialNotificationTitle: 'ZELDA Voice Protection',
@@ -107,22 +188,68 @@ class VoiceGuardService {
         _errorController.add(event['error'] as String);
       }
     });
+    _service.on(_serviceReadyEvent).listen((_) {
+      // Background isolate is up; tell it whether the app is in the foreground
+      // so it knows whether to wake the UI on a keyword detection.
+      _service.invoke(
+        _setForegroundEvent,
+        {'foreground': _appInForeground},
+      );
+    });
   }
 
   static Future<void> start() async {
+    await Permission.microphone.request();
+    await Permission.notification.request();
+    await Permission.ignoreBatteryOptimizations.request();
     await _service.startService();
   }
 
   static Future<void> stop() async {
+    await setEnabledPref(false);
     _service.invoke('stop');
   }
 
   static Future<bool> isRunning() => _service.isRunning();
 
+  /// Restart the background service if the user previously enabled voice
+  /// protection (used when the OS kills the process/isolate while backgrounded).
+  static Future<void> restartIfNeeded() async {
+    if (!await wasEnabled()) return;
+    if (await _service.isRunning()) return;
+    await start();
+  }
+
   /// Post a high-priority notification with full-screen intent so the app is
   /// brought to the foreground when an emergency phrase is detected while the
   /// app is in the background.
   static Future<void> showEmergencyNotification({required String keyword}) async {
+    await _ensureNotificationsInitialized();
+    await _notifications.show(
+      id: alarmNotificationId,
+      title: '🚨 ZELDA SOS TRIGGERED',
+      body: 'Heard "$keyword". Opening app to send SOS...',
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          notificationChannelId,
+          notificationChannelName,
+          channelDescription: notificationChannelDescription,
+          importance: Importance.max,
+          priority: Priority.max,
+          category: AndroidNotificationCategory.alarm,
+          fullScreenIntent: true,
+        ),
+      ),
+    );
+  }
+
+  /// Show the emergency notification FROM the background isolate. The plugin
+  /// instance and initialization are per-isolate, so this ensures the
+  /// notification channel is ready in the current isolate before posting.
+  static Future<void> showEmergencyNotificationFromBackground({
+    required String keyword,
+  }) async {
+    await _ensureNotificationsInitialized();
     await _notifications.show(
       id: alarmNotificationId,
       title: '🚨 ZELDA SOS TRIGGERED',
@@ -146,7 +273,31 @@ class VoiceGuardService {
 Future<void> _onStart(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
-  developer.log('BG isolate started', name: 'VoiceGuard');
+  debugPrint('VoiceGuard BG isolate started');
+
+  var appInForeground = false;
+
+  service.on(VoiceGuardService._resetCooldownEvent).listen((_) {
+    VoiceGuardService._lastTriggeredAt =
+        DateTime.fromMillisecondsSinceEpoch(0);
+    VoiceGuardService._lastTriggeredKeyword = null;
+    developer.log('Trigger dedupe reset by UI', name: 'VoiceGuard');
+  });
+
+  service.on(VoiceGuardService._setForegroundEvent).listen((event) {
+    if (event != null && event['foreground'] != null) {
+      appInForeground = event['foreground'] as bool;
+      developer.log(
+        'App foreground=$appInForeground',
+        name: 'VoiceGuard',
+      );
+    }
+  });
+
+  // Tell the main isolate we are listening so it can reply with the current
+  // foreground state. If the app process was killed (recents) the main isolate
+  // is gone and we correctly keep appInForeground = false.
+  service.invoke(VoiceGuardService._serviceReadyEvent);
 
   String? modelPath;
   VoskFlutterPlugin? vosk;
@@ -154,50 +305,93 @@ Future<void> _onStart(ServiceInstance service) async {
 
   try {
     modelPath = await ModelExtractor.ensureModel();
-    developer.log('Model path: $modelPath', name: 'VoiceGuard');
+    debugPrint('VoiceGuard model path: $modelPath');
     vosk = VoskFlutterPlugin.instance();
     final model = await vosk.createModel(modelPath);
-    developer.log('Vosk model created', name: 'VoiceGuard');
+    debugPrint('VoiceGuard Vosk model created');
     final recognizer = await vosk.createRecognizer(
       model: model,
       sampleRate: 16000,
-      grammar: VoiceGuardService.keywords,
     );
-    developer.log('Recognizer created', name: 'VoiceGuard');
+    debugPrint('VoiceGuard recognizer created');
     speechService = await vosk.initSpeechService(recognizer);
-    developer.log('Speech service initialized', name: 'VoiceGuard');
+    debugPrint('VoiceGuard speech service initialized');
 
-    void checkTranscript(String transcript) {
-      final text = transcript.toLowerCase().trim();
+    String? extractText(String raw) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map<String, dynamic>) {
+          final text = decoded['text'] ?? decoded['partial'];
+          if (text is String) return text.toLowerCase().trim();
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    String normalize(String text) => text.replaceAll(RegExp(r'\s+'), ' ');
+
+    bool phraseMatches(String text, String keyword, {required bool exact}) {
+      final normalized = normalize(text);
+      if (exact) return normalized == keyword;
+      final escaped = RegExp.escape(keyword);
+      return RegExp(r'(^|\W)' + escaped + r'($|\W)').hasMatch(normalized);
+    }
+
+    Future<void> checkTranscript(String raw, {required bool exact}) async {
+      final text = extractText(raw);
+      if (text == null || text.isEmpty) return;
       for (final keyword in VoiceGuardService.keywords) {
-        final escaped = RegExp.escape(keyword);
-        final pattern = RegExp(
-          r'(^|\W)' + escaped + r'($|\W)',
-          caseSensitive: false,
-        );
-        if (pattern.hasMatch(text)) {
-          final now = DateTime.now();
-          if (now.difference(VoiceGuardService._lastDetection) <
-              VoiceGuardService._triggerCooldown) {
-            developer.log(
-              'Keyword "$keyword" within cooldown, ignoring',
-              name: 'VoiceGuard',
-            );
-            continue;
-          }
-          VoiceGuardService._lastDetection = now;
+        if (!phraseMatches(text, keyword, exact: exact)) continue;
+        final now = DateTime.now();
+        final isDuplicate =
+            now.difference(VoiceGuardService._lastTriggeredAt) <
+                VoiceGuardService._dedupeWindow &&
+            VoiceGuardService._lastTriggeredKeyword == keyword;
+        if (isDuplicate) {
           developer.log(
-            'Transcript matched: $keyword',
+            'Keyword "$keyword" already triggered recently, ignoring',
             name: 'VoiceGuard',
           );
-          service.invoke(VoiceGuardService._detectionEvent, {'keyword': keyword});
-          break;
+          continue;
         }
+        VoiceGuardService._lastTriggeredAt = now;
+        VoiceGuardService._lastTriggeredKeyword = keyword;
+        developer.log(
+          'Transcript matched: $keyword',
+          name: 'VoiceGuard',
+        );
+        service.invoke(VoiceGuardService._detectionEvent, {'keyword': keyword});
+        if (!appInForeground) {
+          await VoiceGuardService._markPendingTrigger();
+          await VoiceGuardService.showEmergencyNotificationFromBackground(
+            keyword: keyword,
+          );
+        }
+        // Reset the recognizer so the SAME utterance (its trailing final
+        // result) cannot re-fire, and so the NEXT utterance starts clean.
+        try {
+          await speechService?.reset();
+        } catch (_) {}
+        break;
       }
     }
 
-    speechService.onPartial().listen(checkTranscript);
-    speechService.onResult().listen(checkTranscript);
+    speechService.onPartial().listen((raw) => checkTranscript(raw, exact: true));
+    speechService.onResult().listen((raw) async {
+      await checkTranscript(raw, exact: false);
+      // vosk emits onResult when a full utterance ends. This is the cleanest
+      // "new utterance starts here" signal we get: clear the dedupe so the
+      // NEXT utterance of the keyword triggers again with no limit, without
+      // depending on the cross-isolate reset event.
+      VoiceGuardService._lastTriggeredAt =
+          DateTime.fromMillisecondsSinceEpoch(0);
+      VoiceGuardService._lastTriggeredKeyword = null;
+      // Clear the recognizer so partial text from the finished utterance does
+      // not bleed into the next one (e.g. "help me help me").
+      try {
+        await speechService?.reset();
+      } catch (_) {}
+    });
 
     service.on('stop').listen((_) async {
       await speechService?.stop();
@@ -205,7 +399,7 @@ Future<void> _onStart(ServiceInstance service) async {
     });
 
     await speechService.start();
-    developer.log('Speech service started, listening', name: 'VoiceGuard');
+    debugPrint('VoiceGuard speech service started, listening');
     service.invoke(VoiceGuardService._statusEvent, {'running': true});
   } catch (e, s) {
     developer.log(
@@ -213,6 +407,7 @@ Future<void> _onStart(ServiceInstance service) async {
       name: 'VoiceGuard',
       level: 1000,
     );
+    debugPrint('VoiceGuard BG service failed: $e\n$s');
     service.invoke(VoiceGuardService._errorEvent, {'error': '$e'});
     service.invoke(VoiceGuardService._statusEvent, {'running': false});
     return;
@@ -221,4 +416,22 @@ Future<void> _onStart(ServiceInstance service) async {
   Timer.periodic(const Duration(seconds: 10), (_) {
     service.invoke('heartbeat');
   });
+}
+
+class _LifecycleObserver with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final wasForeground = VoiceGuardService._appInForeground;
+    final foreground = state == AppLifecycleState.resumed;
+    VoiceGuardService._appInForeground = foreground;
+    VoiceGuardService._service.invoke(
+      VoiceGuardService._setForegroundEvent,
+      {'foreground': foreground},
+    );
+    if (foreground && !wasForeground) {
+      // App is coming back to the foreground after being backgrounded; fire any
+      // SOS trigger that was detected while the main isolate was paused.
+      VoiceGuardService._firePendingTriggerIfRecent();
+    }
+  }
 }

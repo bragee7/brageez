@@ -12,6 +12,7 @@ import 'package:video_player/video_player.dart';
 import '../core/theme.dart';
 import '../core/widgets.dart';
 import '../models/emergency_contact.dart';
+import '../services/voice_guard_service.dart';
 import '../state/auth_provider.dart';
 import '../state/contacts_provider.dart';
 import '../state/sos_controller.dart';
@@ -52,6 +53,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
       context.read<SosController>().init();
       context.read<ContactsProvider>().fetchContacts();
       _maybeAutoStartVoice();
+      VoiceGuardService.consumePendingTrigger();
     });
   }
 
@@ -65,6 +67,8 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     if (!mounted) return;
     if (mic.isGranted) {
       await context.read<SosController>().setVoiceEnabled(true);
+    } else if (await VoiceGuardService.wasEnabled()) {
+      await VoiceGuardService.restartIfNeeded();
     }
   }
 
@@ -576,7 +580,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           Expanded(
             child: Text(
               sos.voiceEnabled
-                  ? 'Voice Protection Active - Listening for "Help Me", "Emergency", or "Save Me"'
+                  ? 'Voice Protection Active - Listening for "Help Me"'
                   : '24/7 Voice Protection Off',
               style: const TextStyle(color: AppColors.green400, fontSize: 13),
             ),
@@ -1172,7 +1176,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
                 child: _howItWorksStep('1', AppColors.blue600, 'Voice recognition is always active in background'),
               ),
               Expanded(
-                child: _howItWorksStep('2', AppColors.orange600, 'Say "Help Me", "Emergency", or "Save Me"'),
+                child: _howItWorksStep('2', AppColors.orange600, 'Say "Help Me"'),
               ),
               Expanded(
                 child: _howItWorksStep('3', AppColors.red600, '30-second recording will be sent to police'),

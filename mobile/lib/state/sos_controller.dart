@@ -118,6 +118,7 @@ class SosController extends ChangeNotifier {
     notifyListeners();
     if (enabled) {
       try {
+        await VoiceGuardService.setEnabledPref(true);
         await VoiceGuardService.start();
       } catch (e) {
         _voiceEnabled = false;
@@ -171,6 +172,7 @@ class SosController extends ChangeNotifier {
     _countdown = null;
     _status = SosStatus.listening;
     _success = 'SOS alert cancelled';
+    VoiceGuardService.resetDetectionCooldown();
     notifyListeners();
     Future.delayed(const Duration(seconds: 3), () {
       _success = '';
@@ -300,6 +302,8 @@ class SosController extends ChangeNotifier {
 
       startLocationTracking(caseData.id);
 
+      VoiceGuardService.resetDetectionCooldown();
+
       Future.delayed(const Duration(seconds: 5), () {
         _status = SosStatus.listening;
         _success = '';
@@ -308,6 +312,7 @@ class SosController extends ChangeNotifier {
     } catch (e) {
       _error = 'Failed to send emergency alert: $e';
       _status = SosStatus.idle;
+      VoiceGuardService.resetDetectionCooldown();
       notifyListeners();
     }
   }
