@@ -1,53 +1,64 @@
-const nodemailer = require('nodemailer');
-const path = require('path');
-const fs = require('fs');
 const config = require('../config');
 
-const LOGO_PATH = path.join(__dirname, '../../logo.jpeg');
+const SENDGRID_API_URL = 'https://api.sendgrid.com/v3/mail/send';
 
-const initTransporter = () => {
-  if (!config.email.user || !config.email.pass) {
-    console.warn('⚠️ Email not configured - cannot create transporter');
-    return null;
-  }
-
-  const cleanPass = config.email.pass.replace(/\s/g, '');
-
-  console.log(`📧 Creating transporter for: ${config.email.user} via ${config.email.host}:${config.email.port}`);
-
-  return nodemailer.createTransport({
-    host: config.email.host,
-    port: config.email.port,
-    secure: false,
-    requireTLS: true,
-    auth: {
-      user: config.email.user,
-      pass: cleanPass
-    },
-    tls: {
-      rejectUnauthorized: false
-    },
-    connectionTimeout: 8000,
-    greetingTimeout: 8000
-  });
+const parseFrom = () => {
+  const raw = config.email.from || `ZELDA <${config.email.user}>`;
+  const m = raw.match(/^(.*?)\s*<([^>]+)>\s*$/);
+  if (m) return { name: m[1].trim(), email: m[2].trim() };
+  return { name: 'ZELDA', email: raw.trim() };
 };
 
 const isEmailConfigured = () => {
-  return !!(config.email.user && config.email.pass);
+  return !!(config.email.sendgridApiKey && config.email.user);
 };
 
-const sendOTPEmail = async (email, name, otp) => {
-  const transporter = initTransporter();
-  if (!transporter) {
+const sendViaSendGrid = async (to, subject, html) => {
+  if (!config.email.sendgridApiKey) {
+    console.warn('⚠️ Email not configured - cannot send');
     return { success: false, error: 'Email not configured' };
   }
 
+  const recipients = Array.isArray(to)
+    ? to.map(t => (typeof t === 'string' ? { email: t } : t))
+    : [{ email: to }];
+
+  const payload = {
+    personalizations: [{ to: recipients }],
+    from: parseFrom(),
+    subject,
+    content: [{ type: 'text/html', value: html }]
+  };
+
   try {
-    const mailOptions = {
-      from: 'ZELDA <' + config.email.user + '>',
-      to: email,
-      subject: 'ZELDA - Email Verification',
-      html: `
+    const response = await fetch(SENDGRID_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${config.email.sendgridApiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.status === 202) {
+      console.log(`📧 Email sent to ${to} via SendGrid`);
+      return { success: true };
+    }
+
+    const body = await response.text();
+    console.error(`Email send error: SendGrid ${response.status}: ${body}`);
+    return { success: false, error: `SendGrid ${response.status}: ${body}` };
+  } catch (error) {
+    console.error('Email send error:', error.message);
+    return { success: false, error: error.message };
+  }
+};
+
+const sendOTPEmail = async (email, name, otp) => {
+  return sendViaSendGrid(
+    email,
+    'ZELDA - Email Verification',
+    `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fafafa; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
           <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 30px; text-align: center;">
             <h1 style="color: #e94560; margin: 0; font-size: 28px; letter-spacing: 3px;">ZELDA</h1>
@@ -67,111 +78,61 @@ const sendOTPEmail = async (email, name, otp) => {
           </div>
         </div>
       `
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log(`📧 OTP email sent to ${email}`);
-    return { success: true };
-  } catch (error) {
-    console.error('Email send error:', error.message);
-    return { success: false, error: error.message };
-  }
+  );
 };
 
 const sendSOSAlert = async (caseData, videoUrl, audioUrl) => {
-  const transporter = initTransporter();
-  if (!transporter) {
-    console.log('📧 Email not configured - SOS alert skipped');
-    return { success: false, error: 'Email not configured' };
+  const mediaLinks = [];
+  if (videoUrl) {
+    mediaLinks.push(`<p><strong>Video:</strong> <a href="${videoUrl}">Play emergency video</a></p>`);
+  }
+  if (audioUrl) {
+    mediaLinks.push(`<p><strong>Audio:</strong> <a href="${audioUrl}">Play emergency audio</a></p>`);
   }
 
-  try {
-    const mediaLinks = [];
-    if (videoUrl) {
-      mediaLinks.push(`<p><strong>Video:</strong> <a href="${videoUrl}">Play emergency video</a></p>`);
-    }
-    if (audioUrl) {
-      mediaLinks.push(`<p><strong>Audio:</strong> <a href="${audioUrl}">Play emergency audio</a></p>`);
-    }
-
-    const mailOptions = {
-      from: config.email.user,
-      to: config.email.policeEmail,
-      subject: `🚨 SOS ALERT - Emergency from ${caseData.user_email}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #dc2626;">🚨 SOS EMERGENCY ALERT</h2>
-          <p><strong>User:</strong> ${caseData.user_email}</p>
-          <p><strong>Status:</strong> ${caseData.status}</p>
-          <p><strong>Time:</strong> ${caseData.created_at}</p>
-          ${caseData.location_link ? `<p><strong>Location:</strong> <a href="${caseData.location_link}">View on Google Maps</a></p>` : ''}
-          ${caseData.notes ? `<p><strong>Notes:</strong> ${caseData.notes}</p>` : ''}
-          ${mediaLinks.join('')}
-          <p style="color: #dc2626; font-weight: bold;">Immediate response required.</p>
-        </div>
-      `
-    };
-
-    const result = await transporter.sendMail(mailOptions);
-    console.log(`📧 SOS alert email sent to police`);
-    return { success: true, messageId: result.messageId };
-  } catch (error) {
-    console.error('SOS email error:', error.message);
-    return { success: false, error: error.message };
-  }
+  return sendViaSendGrid(
+    config.email.policeEmail,
+    `🚨 SOS ALERT - Emergency from ${caseData.user_email}`,
+    `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">🚨 SOS EMERGENCY ALERT</h2>
+        <p><strong>User:</strong> ${caseData.user_email}</p>
+        <p><strong>Status:</strong> ${caseData.status}</p>
+        <p><strong>Time:</strong> ${caseData.created_at}</p>
+        ${caseData.location_link ? `<p><strong>Location:</strong> <a href="${caseData.location_link}">View on Google Maps</a></p>` : ''}
+        ${caseData.notes ? `<p><strong>Notes:</strong> ${caseData.notes}</p>` : ''}
+        ${mediaLinks.join('')}
+        <p style="color: #dc2626; font-weight: bold;">Immediate response required.</p>
+      </div>
+    `
+  );
 };
 
 const sendContactSOSAlert = async (caseData, contact) => {
-  const transporter = initTransporter();
-  if (!transporter) {
-    return { success: false, error: 'Email not configured' };
-  }
-
-  try {
-    const mailOptions = {
-      from: config.email.user,
-      to: contact.email,
-      subject: `🚨 SOS EMERGENCY - ${caseData.user_email} needs help!`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #dc2626;">🚨 SOS EMERGENCY ALERT</h2>
-          <p>Hello <strong>${contact.name}</strong>,</p>
-          <p><strong>${caseData.user_email}</strong> has triggered an emergency SOS alert.</p>
-          ${caseData.location_link ? `<p><strong>Location:</strong> <a href="${caseData.location_link}">View on Google Maps</a></p>` : ''}
-          ${caseData.notes ? `<p><strong>Details:</strong> ${caseData.notes}</p>` : ''}
-          <p><strong>Time:</strong> ${caseData.created_at}</p>
-          <hr>
-          <p style="color: #dc2626; font-weight: bold;">Please check on them immediately.</p>
-        </div>
-      `
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log(`📧 SOS alert sent to contact: ${contact.email}`);
-    return { success: true };
-  } catch (error) {
-    console.error('Contact email error:', error.message);
-    return { success: false, error: error.message };
-  }
+  return sendViaSendGrid(
+    contact.email,
+    `🚨 SOS EMERGENCY - ${caseData.user_email} needs help!`,
+    `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">🚨 SOS EMERGENCY ALERT</h2>
+        <p>Hello <strong>${contact.name}</strong>,</p>
+        <p><strong>${caseData.user_email}</strong> has triggered an emergency SOS alert.</p>
+        ${caseData.location_link ? `<p><strong>Location:</strong> <a href="${caseData.location_link}">View on Google Maps</a></p>` : ''}
+        ${caseData.notes ? `<p><strong>Details:</strong> ${caseData.notes}</p>` : ''}
+        <p><strong>Time:</strong> ${caseData.created_at}</p>
+        <hr>
+        <p style="color: #dc2626; font-weight: bold;">Please check on them immediately.</p>
+      </div>
+    `
+  );
 };
 
 const sendTestEmail = async () => {
-  const transporter = initTransporter();
-  if (!transporter) {
-    return { success: false, error: 'Email not configured' };
-  }
-
-  try {
-    await transporter.sendMail({
-      from: config.email.user,
-      to: config.email.policeEmail,
-      subject: 'Test Email - Women Safety Guardian',
-      text: 'This is a test email from Women Safety Guardian.'
-    });
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
+  return sendViaSendGrid(
+    config.email.policeEmail,
+    'Test Email - Women Safety Guardian',
+    '<p>This is a test email from Women Safety Guardian.</p>'
+  );
 };
 
 module.exports = { sendOTPEmail, sendSOSAlert, sendContactSOSAlert, sendTestEmail, isEmailConfigured };

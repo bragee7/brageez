@@ -35,6 +35,7 @@ const email = {
   port: config.EMAIL_PORT || process.env.EMAIL_PORT || 587,
   user: config.EMAIL_USER || process.env.EMAIL_USER || '',
   pass: config.EMAIL_PASS || process.env.EMAIL_PASS || '',
+  sendgridApiKey: config.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY || '',
   from: config.EMAIL_FROM || process.env.EMAIL_FROM || 'Women Safety Guardian <noreply@guaridan.com>',
   policeEmail: config.POLICE_EMAIL || process.env.POLICE_EMAIL || 'police@guardian.com'
 };

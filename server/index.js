@@ -2,9 +2,6 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const path = require('path');
-const dns = require('dns');
-
-dns.setDefaultResultOrder('ipv4first');
 
 const config = require('./config');
 const { pool } = require('./db');
@@ -59,59 +56,9 @@ app.get('/api/config-status', (req, res) => {
     database: config.db.connectionString ? '✅ Connected' : '❌ Not configured',
     supabase: supabaseConfigured ? '✅ Configured' : '❌ Not configured',
     jwt: config.jwt.secret ? '✅ Configured' : '❌ Not configured',
-    email: config.email.user && config.email.pass ? '✅ Configured' : '⚠️ Not configured (SOS emails will not be sent)',
+    email: config.email.sendgridApiKey ? '✅ Configured (SendGrid)' : '⚠️ Not configured (SOS emails will not be sent)',
     policeEmail: config.email.policeEmail || 'Not set'
   });
-});
-
-app.get('/api/debug-smtp', async (req, res) => {
-  const net = require('net');
-  const dnsLib = require('dns');
-  const result = { dns: null, v4connect: null, v6connect: null };
-  try {
-    result.dns = await new Promise((resolve) => {
-      dnsLib.resolve4('smtp.gmail.com', (e4, a4) => {
-        dnsLib.resolve6('smtp.gmail.com', (e6, a6) => {
-          resolve({ a4: e4 ? e4.message : a4, a6: e6 ? e6.message : a6, order: dnsLib.getDefaultResultOrder() });
-        });
-      });
-    });
-  } catch (e) { result.dns = e.message; }
-
-  const tryConnect = (host, family) => new Promise((resolve) => {
-    const sock = new net.Socket();
-    const done = (ok, info) => { sock.destroy(); resolve({ ok, info }); };
-    sock.setTimeout(5000);
-    sock.once('connect', () => done(true, 'connected'));
-    sock.once('timeout', () => done(false, 'timeout'));
-    sock.once('error', (e) => done(false, e.code || e.message));
-    sock.connect(587, host, () => {});
-  });
-
-  const a4 = (result.dns && Array.isArray(result.dns.a4) && result.dns.a4[0]) || null;
-  result.v4connect = a4 ? await tryConnect(a4, 4) : 'no A record';
-  const a6 = (result.dns && Array.isArray(result.dns.a6) && result.dns.a6[0]) || null;
-  result.v6connect = a6 ? await tryConnect(a6, 6) : 'no AAAA record';
-
-  const probes = {};
-  const probe = async (label, host, port) => {
-    const sock = new net.Socket();
-    const done = (ok, info) => { sock.destroy(); probes[label] = { ok, info }; };
-    sock.setTimeout(4000);
-    sock.once('connect', () => done(true, 'connected'));
-    sock.once('timeout', () => done(false, 'timeout'));
-    sock.once('error', (e) => done(false, e.code || e.message));
-    sock.connect(port, host, () => {});
-    await new Promise(r => setTimeout(r, 5000));
-  };
-  await probe('gmail_465', a4, 465);
-  await probe('gmail_587_retry', a4, 587);
-  const sg = await new Promise((resolve) => dnsLib.resolve4('smtp.sendgrid.net', (e, a) => resolve(e ? null : (a[0] || null))));
-  await probe('sendgrid_587', sg || 'smtp.sendgrid.net', 587);
-  await probe('sendgrid_2525', sg || 'smtp.sendgrid.net', 2525);
-  result.probes = probes;
-
-  res.json(result);
 });
 
 const distPath = path.join(__dirname, '../client/dist');
