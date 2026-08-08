@@ -30,7 +30,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
   late final Animation<double> _glow;
 
   bool _showAddContact = false;
-  int? _editingContactId;
+  String? _editingContactId;
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
@@ -174,7 +174,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     }
   }
 
-  Future<void> _deleteContact(ContactsProvider contacts, int id) async {
+  Future<void> _deleteContact(ContactsProvider contacts, String id) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(

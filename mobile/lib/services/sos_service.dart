@@ -52,14 +52,14 @@ class SosService {
         .toList();
   }
 
-  Future<SosCase> getCase(int id) async {
+  Future<SosCase> getCase(String id) async {
     final response = await _api.get('/sos/$id');
     final data = Map<String, dynamic>.from(response.data as Map);
     return SosCase.fromJson(Map<String, dynamic>.from(data['case'] as Map));
   }
 
   Future<SosCase> updateCase(
-    int id, {
+    String id, {
     String? status,
     String? notes,
   }) async {
@@ -73,7 +73,7 @@ class SosService {
   }
 
   Future<void> updateLocation(
-    int id, {
+    String id, {
     required String latitude,
     required String longitude,
     required String locationLink,

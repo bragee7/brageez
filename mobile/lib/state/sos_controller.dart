@@ -312,7 +312,7 @@ class SosController extends ChangeNotifier {
     }
   }
 
-  Future<void> startLocationTracking(int caseId) async {
+  Future<void> startLocationTracking(String caseId) async {
     _isTracking = true;
     notifyListeners();
 

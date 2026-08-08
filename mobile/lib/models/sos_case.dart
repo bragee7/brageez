@@ -1,6 +1,6 @@
 class SosCase {
-  final int id;
-  final int userId;
+  final String id;
+  final String userId;
   final String? userEmail;
   final String? locationLink;
   final String? latitude;
@@ -38,11 +38,8 @@ class SosCase {
     }
 
     return SosCase(
-      id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}') ?? 0,
-      userId:
-          json['userId'] is int
-              ? json['userId']
-              : int.tryParse('${json['userId'] ?? json['user_id']}') ?? 0,
+      id: json['id']?.toString() ?? '',
+      userId: (json['userId'] ?? json['user_id'])?.toString() ?? '',
       userEmail: json['userEmail'] ?? json['user_email'],
       locationLink: json['locationLink'] ?? json['location_link'],
       latitude: json['latitude']?.toString(),

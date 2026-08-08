@@ -35,6 +35,7 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void initState() {
     super.initState();
+    _focusNode.addListener(() => setState(() {}));
     _focusNode.requestFocus();
   }
 
@@ -202,29 +203,43 @@ class _OtpScreenState extends State<OtpScreen> {
                   AppBanner(message: _success, onDismiss: () => setState(() => _success = '')),
                   const SizedBox(height: 8),
                 ],
+                const Text(
+                  'Enter the 6-digit verification code',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.gray600,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _OtpDigitBoxes(
+                  text: _otpController.text,
+                  focusedIndex: _focusNode.hasFocus ? _otpController.text.length : -1,
+                  enabled: !_verified,
+                  onTap: _focusNode.requestFocus,
+                ),
                 TextField(
                   controller: _otpController,
                   focusNode: _focusNode,
                   enabled: !_verified,
                   keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
                   maxLength: 6,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(6),
                   ],
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 12,
-                    color: AppColors.gray800,
-                  ),
+                  style: const TextStyle(fontSize: 0, color: Colors.transparent),
                   decoration: const InputDecoration(
                     counterText: '',
-                    labelText: '6-digit code',
-                    hintText: '••••••',
+                    border: InputBorder.none,
+                    filled: false,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
                   ),
                   onChanged: (value) {
+                    setState(() {});
                     if (value.length == 6) {
                       _handleVerify();
                     }
@@ -279,6 +294,84 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _OtpDigitBoxes extends StatelessWidget {
+  final String text;
+  final int focusedIndex;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _OtpDigitBoxes({
+    required this.text,
+    required this.focusedIndex,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(6, (index) {
+          final digit = index < text.length ? text[index] : '';
+          final isFilled = digit.isNotEmpty;
+          final isFocused = index == focusedIndex && enabled;
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                curve: Curves.easeOut,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: isFocused
+                      ? AppColors.blue50
+                      : (isFilled ? AppColors.gray50 : Colors.white),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isFocused
+                        ? AppColors.purple600
+                        : (isFilled ? AppColors.blue300 : AppColors.gray300),
+                    width: isFocused ? 2 : 1.5,
+                  ),
+                  boxShadow: isFocused
+                      ? [
+                          BoxShadow(
+                            color: AppColors.purple600.withValues(alpha: 0.18),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                alignment: Alignment.center,
+                child: digit.isEmpty
+                    ? Container(
+                        width: 2,
+                        height: 26,
+                        decoration: BoxDecoration(
+                          color: isFocused ? AppColors.purple600 : AppColors.gray200,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      )
+                    : Text(
+                        digit,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.gray800,
+                        ),
+                      ),
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

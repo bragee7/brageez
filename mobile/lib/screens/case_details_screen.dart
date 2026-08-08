@@ -16,7 +16,7 @@ import '../services/sos_service.dart';
 import '../state/auth_provider.dart';
 
 class CaseDetailsScreen extends StatefulWidget {
-  final int caseId;
+  final String caseId;
   const CaseDetailsScreen({super.key, required this.caseId});
 
   @override
@@ -150,7 +150,7 @@ class _CaseDetailsScreenState extends State<CaseDetailsScreen> {
           pw.SizedBox(height: 32),
           _sectionTitle('Case Information'),
           _table([
-            _row('Case ID', '${caseData.id}'),
+            _row('Case ID', caseData.id),
             _row('Status', caseData.status),
             _row('Reporter', caseData.userEmail ?? 'Unknown'),
             _row('Reported At', _formatFull(caseData.timestamp)),

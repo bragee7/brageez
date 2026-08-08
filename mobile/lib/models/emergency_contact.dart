@@ -1,6 +1,6 @@
 class EmergencyContact {
-  final int id;
-  final int userId;
+  final String id;
+  final String userId;
   final String name;
   final String phone;
   final String email;
@@ -17,10 +17,8 @@ class EmergencyContact {
 
   factory EmergencyContact.fromJson(Map<String, dynamic> json) {
     return EmergencyContact(
-      id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}') ?? 0,
-      userId: json['user_id'] is int
-          ? json['user_id']
-          : int.tryParse('${json['user_id']}') ?? 0,
+      id: json['id']?.toString() ?? '',
+      userId: (json['user_id'] ?? json['userId'])?.toString() ?? '',
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',

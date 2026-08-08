@@ -17,11 +17,12 @@ class VoiceGuardService {
   static const notificationChannelId = 'zelda_voice_protection';
   static const notificationChannelName = 'ZELDA Voice Protection';
   static const notificationChannelDescription =
-      '24/7 background listening for emergency phrases';
+      '24/7 background listening for the emergency phrase';
   static const fgsNotificationId = 256;
   static const alarmNotificationId = 257;
 
-  static const keywords = ['help me', 'emergency', 'save me'];
+  /// The ONLY phrase that triggers an SOS. Change this to any word or phrase.
+  static const keywords = ['help me'];
 
   static final FlutterBackgroundService _service = FlutterBackgroundService();
   static final FlutterLocalNotificationsPlugin _notifications =
@@ -30,6 +31,11 @@ class VoiceGuardService {
   static final _detectionController = StreamController<String>.broadcast();
   static final _statusController = StreamController<bool>.broadcast();
   static final _errorController = StreamController<String>.broadcast();
+
+  static DateTime _lastDetection = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// Minimum time between two SOS triggers from the same keyword utterance.
+  static const _triggerCooldown = Duration(seconds: 20);
 
   static Stream<String> get detections => _detectionController.stream;
   static Stream<bool> get statusStream => _statusController.stream;
@@ -164,7 +170,22 @@ Future<void> _onStart(ServiceInstance service) async {
     void checkTranscript(String transcript) {
       final text = transcript.toLowerCase().trim();
       for (final keyword in VoiceGuardService.keywords) {
-        if (text.contains(keyword)) {
+        final escaped = RegExp.escape(keyword);
+        final pattern = RegExp(
+          r'(^|\W)' + escaped + r'($|\W)',
+          caseSensitive: false,
+        );
+        if (pattern.hasMatch(text)) {
+          final now = DateTime.now();
+          if (now.difference(VoiceGuardService._lastDetection) <
+              VoiceGuardService._triggerCooldown) {
+            developer.log(
+              'Keyword "$keyword" within cooldown, ignoring',
+              name: 'VoiceGuard',
+            );
+            continue;
+          }
+          VoiceGuardService._lastDetection = now;
           developer.log(
             'Transcript matched: $keyword',
             name: 'VoiceGuard',

@@ -41,7 +41,7 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   Future<void> update(
-    int id, {
+    String id, {
     required String name,
     required String phone,
     String email = '',
@@ -57,7 +57,7 @@ class ContactsProvider extends ChangeNotifier {
     await fetchContacts();
   }
 
-  Future<void> remove(int id) async {
+  Future<void> remove(String id) async {
     await _contactsService.deleteContact(id);
     await fetchContacts();
   }

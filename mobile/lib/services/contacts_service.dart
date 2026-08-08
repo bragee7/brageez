@@ -28,7 +28,7 @@ class ContactsService {
   }
 
   Future<void> updateContact(
-    int id, {
+    String id, {
     required String name,
     required String phone,
     String email = '',
@@ -42,7 +42,7 @@ class ContactsService {
     });
   }
 
-  Future<void> deleteContact(int id) async {
+  Future<void> deleteContact(String id) async {
     await _api.delete('/contacts/$id');
   }
 }
