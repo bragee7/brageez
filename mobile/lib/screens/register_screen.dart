@@ -74,7 +74,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } on DioException catch (e) {
       final data = e.response?.data;
       setState(() {
-        _error = data is Map ? data['error']?.toString() ?? 'Registration failed' : 'Registration failed. Please try again.';
+        _error = data is Map
+            ? data['error']?.toString() ?? 'Registration failed'
+            : (e.response == null
+                ? 'Cannot reach the server. Check your connection and try again.'
+                : 'Registration failed. Please try again.');
         _loading = false;
       });
     } catch (e) {

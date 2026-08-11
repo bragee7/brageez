@@ -22,7 +22,7 @@ class OtpScreen extends StatefulWidget {
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends State<OtpScreen> with WidgetsBindingObserver {
   final _otpController = TextEditingController();
   final _focusNode = FocusNode();
 
@@ -35,12 +35,36 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _focusNode.addListener(() => setState(() {}));
     _focusNode.requestFocus();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || _verified) return;
+    for (final delay in const [150, 400, 800]) {
+      Future<void>.delayed(Duration(milliseconds: delay), () {
+        if (mounted) _forceKeyboard();
+      });
+    }
+  }
+
+  Future<void> _forceKeyboard() async {
+    if (_verified || !mounted) return;
+    _focusNode.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    if (!mounted) return;
+    _focusNode.requestFocus();
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    if (!mounted) return;
+    await SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _otpController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -218,11 +242,15 @@ class _OtpScreenState extends State<OtpScreen> {
                   text: _otpController.text,
                   focusedIndex: _focusNode.hasFocus ? _otpController.text.length : -1,
                   enabled: !_verified,
-                  onTap: _focusNode.requestFocus,
+                  onTap: () {
+                    _focusNode.requestFocus();
+                    SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+                  },
                 ),
                 TextField(
                   controller: _otpController,
                   focusNode: _focusNode,
+                  autofocus: true,
                   enabled: !_verified,
                   keyboardType: TextInputType.number,
                   maxLength: 6,

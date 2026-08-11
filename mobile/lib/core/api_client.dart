@@ -9,11 +9,14 @@ class ApiClient {
 
   static final ApiClient instance = ApiClient._();
   final Dio dio;
+  final Map<RequestOptions, int> _retryCount = {};
+
+  static const _maxRetries = 1;
 
   ApiClient._()
       : dio = Dio(BaseOptions(
           baseUrl: AppConfig.apiBaseUrl,
-          connectTimeout: const Duration(seconds: 30),
+          connectTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 180),
           sendTimeout: const Duration(seconds: 180),
           headers: {'Content-Type': 'application/json'},
@@ -34,6 +37,26 @@ class ApiClient {
         if (status == 401 && hadToken && !path.contains('/auth/login')) {
           await clearToken();
         }
+
+        final isConnectionIssue =
+            error.type == DioExceptionType.connectionTimeout ||
+                error.type == DioExceptionType.sendTimeout ||
+                error.type == DioExceptionType.receiveTimeout ||
+                error.type == DioExceptionType.connectionError;
+        final attempts = _retryCount[error.requestOptions] ?? 0;
+        if (isConnectionIssue && attempts < _maxRetries) {
+          _retryCount[error.requestOptions] = attempts + 1;
+          try {
+            await Future<void>.delayed(const Duration(seconds: 2));
+            final response = await dio.fetch(error.requestOptions);
+            _retryCount.remove(error.requestOptions);
+            handler.resolve(response);
+            return;
+          } catch (_) {
+            // Fall through to the default error handling.
+          }
+        }
+        _retryCount.remove(error.requestOptions);
         handler.next(error);
       },
     ));

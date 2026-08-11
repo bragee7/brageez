@@ -233,52 +233,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                const Divider(color: AppColors.gray200),
-                const SizedBox(height: 8),
-                const Text(
-                  'Demo Accounts (pre-verified):',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.gray500, fontSize: 12),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.blue50,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Column(
-                          children: [
-                            Text('Police', style: TextStyle(color: AppColors.policeBlue, fontWeight: FontWeight.w600)),
-                            Text('police@guardian.com', style: TextStyle(color: AppColors.gray600, fontSize: 11)),
-                            Text('police123', style: TextStyle(color: AppColors.gray600, fontSize: 11)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.pink50,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Column(
-                          children: [
-                            Text('User', style: TextStyle(color: AppColors.pink600, fontWeight: FontWeight.w600)),
-                            Text('user@guardian.com', style: TextStyle(color: AppColors.gray600, fontSize: 11)),
-                            Text('user123', style: TextStyle(color: AppColors.gray600, fontSize: 11)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
