@@ -9,7 +9,7 @@ const AdminAuditLog = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await adminAPI.getAuditLog(300);
+        const response = await adminAPI.getAuditLog({ page: 1, size: 300 });
         setEntries(response.data.entries);
         setLoading(false);
       } catch (err) {
