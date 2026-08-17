@@ -8,6 +8,7 @@ import ErrorState from '../../components/admin/ErrorState';
 import RefreshButton from '../../components/admin/RefreshButton';
 import FilterBar from '../../components/admin/FilterBar';
 import Pagination from '../../components/admin/Pagination';
+import CaseActions from '../../components/admin/CaseActions';
 import { shortId, formatTime, truncate } from '../../utils/format';
 
 const STATUS_COLORS = {
@@ -76,6 +77,7 @@ const TodayCasesPanel = ({ onClose, title }) => {
         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[r.status] || 'bg-gray-700 text-gray-300'}`}>{r.status || '—'}</span>
     },
     { key: 'assignedOfficer', label: 'Assigned Officer', render: (r) => <span className="text-gray-300">{r.assignedOfficer || '—'}</span> },
+    { key: 'actions', label: 'Actions', render: (r) => <CaseActions row={r} onChanged={load} /> },
   ];
 
   const filters = [

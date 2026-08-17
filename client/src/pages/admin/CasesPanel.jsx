@@ -9,6 +9,7 @@ import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import ErrorState from '../../components/admin/ErrorState';
 import RefreshButton from '../../components/admin/RefreshButton';
+import CaseActions from '../../components/admin/CaseActions';
 import { formatDateTime, shortId, truncate } from '../../utils/format';
 
 const STATUS_COLORS = {
@@ -70,6 +71,7 @@ const CasesPanel = ({ onClose, title, fixedStatus, columns: overrideColumns }) =
     { key: 'assignedOfficer', label: 'Assigned Officer', render: (r) => <span className="text-gray-300">{r.assignedOfficer || '—'}</span> },
     { key: 'updatedAt', label: 'Last Updated', render: (r) => formatDateTime(r.updatedAt) },
   ];
+  columns.push({ key: 'actions', label: 'Actions', render: (r) => <CaseActions row={r} onChanged={load} /> });
 
   const filters = [];
   if (!fixedStatus) filters.push({ key: 'status', label: 'All Statuses', options: [{ value: 'Pending', label: 'Pending' }, { value: 'Resolved', label: 'Resolved' }] });
