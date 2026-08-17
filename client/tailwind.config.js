@@ -22,9 +22,14 @@ export default {
         'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
         'bounce-in': 'bounceIn 0.6s ease-out',
         'slide-up': 'slideUp 0.3s ease-out',
+        'slide-in': 'slideIn 0.3s ease-out',
         'glow': 'glow 2s ease-in-out infinite alternate'
       },
       keyframes: {
+        slideIn: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' }
+        },
         shake: {
           '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
           '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },

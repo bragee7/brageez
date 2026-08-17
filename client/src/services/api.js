@@ -66,13 +66,14 @@ export const adminAPI = {
   getRegistrations: (days = 30) => api.get(`/admin/stats/registrations?days=${days}`),
   getCasesByDay: (days = 30) => api.get(`/admin/stats/cases-by-day?days=${days}`),
   getCasesByUser: () => api.get('/admin/stats/cases-by-user'),
-  getUsers: () => api.get('/admin/users'),
+  getUsers: (params = {}) => api.get('/admin/users', { params }),
   createUser: (data) => api.post('/admin/users', data),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
   getCases: (params = {}) => api.get('/admin/cases', { params }),
   getCase: (id) => api.get(`/admin/cases/${id}`),
   updateCase: (id, data) => api.put(`/admin/cases/${id}`, data),
-  getAuditLog: (limit = 200) => api.get(`/admin/audit-log?limit=${limit}`)
+  getContacts: (params = {}) => api.get('/admin/contacts', { params }),
+  getAuditLog: (params = {}) => api.get('/admin/audit-log', { params })
 };
 
 export const getMediaUrl = (path) => {

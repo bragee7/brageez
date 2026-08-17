@@ -29,11 +29,30 @@ const mapCase = (c) => ({
   latitude: c.latitude,
   longitude: c.longitude,
   status: c.status,
+  priority: c.priority,
+  caseType: c.case_type,
+  assignedOfficer: c.assigned_officer,
   notes: c.notes,
   videoUrl: c.video_url,
   audioUrl: c.audio_url,
   triggerType: c.trigger_type,
   timestamp: c.created_at,
+  createdAt: c.created_at,
+  updatedAt: c.updated_at,
+  waitingDuration: c.waiting_duration,
+  resolutionTime: c.resolution_time,
+  resolvedAt: c.resolved_at
+});
+
+const mapContact = (c) => ({
+  id: c.id,
+  userId: c.user_id,
+  userEmail: c.user_email,
+  userName: c.user_name,
+  name: c.name,
+  phone: c.phone,
+  email: c.email,
+  relation: c.relation,
   createdAt: c.created_at,
   updatedAt: c.updated_at
 });
@@ -93,11 +112,11 @@ router.get('/stats/registrations', async (req, res) => {
   try {
     const days = Math.min(Math.max(parseInt(req.query.days) || 30, 1), 90);
     const rows = await query(
-      `SELECT created_at::date AS day, COUNT(*)::int AS count
-       FROM users
-       WHERE created_at >= CURRENT_DATE - ($1::int - 1)
-       GROUP BY created_at::date
-       ORDER BY created_at::date ASC`,
+      `SELECT d.day, COALESCE(COUNT(u.id), 0)::int AS count
+       FROM generate_series(CURRENT_DATE - ($1::int - 1), CURRENT_DATE, '1 day'::interval) AS d(day)
+       LEFT JOIN users u ON u.created_at::date = d.day
+       GROUP BY d.day
+       ORDER BY d.day ASC`,
       [days]
     );
     res.json({ days, series: rows });
@@ -111,11 +130,11 @@ router.get('/stats/cases-by-day', async (req, res) => {
   try {
     const days = Math.min(Math.max(parseInt(req.query.days) || 30, 1), 90);
     const rows = await query(
-      `SELECT created_at::date AS day, COUNT(*)::int AS count
-       FROM sos_cases
-       WHERE created_at >= CURRENT_DATE - ($1::int - 1)
-       GROUP BY created_at::date
-       ORDER BY created_at::date ASC`,
+      `SELECT d.day, COALESCE(COUNT(c.id), 0)::int AS count
+       FROM generate_series(CURRENT_DATE - ($1::int - 1), CURRENT_DATE, '1 day'::interval) AS d(day)
+       LEFT JOIN sos_cases c ON c.created_at::date = d.day
+       GROUP BY d.day
+       ORDER BY d.day ASC`,
       [days]
     );
     res.json({ days, series: rows });
@@ -143,12 +162,58 @@ router.get('/stats/cases-by-user', async (req, res) => {
 
 router.get('/users', async (req, res) => {
   try {
-    const rows = await query(
-      `SELECT u.*, (SELECT COUNT(*)::int FROM sos_cases c WHERE c.user_id = u.id) AS case_count
-       FROM users u
-       ORDER BY u.created_at DESC`
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const size = Math.min(Math.max(parseInt(req.query.size) || 20, 1), 100);
+    const offset = (page - 1) * size;
+    const search = (req.query.search || '').trim();
+    const statusFilter = req.query.status;
+    const todayOnly = req.query.today === '1';
+
+    const conditions = [];
+    const params = [];
+
+    if (search) {
+      params.push(`%${search}%`);
+      conditions.push(`(u.name ILIKE $${params.length} OR u.email ILIKE $${params.length} OR u.personal_email ILIKE $${params.length})`);
+    }
+    if (statusFilter === 'active') {
+      conditions.push('u.is_verified = true');
+    } else if (statusFilter === 'inactive') {
+      conditions.push('u.is_verified = false');
+    }
+    if (todayOnly) {
+      conditions.push('u.created_at::date = CURRENT_DATE');
+    }
+
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const totalRows = await query(
+      `SELECT COUNT(*)::int AS count FROM users u ${where}`,
+      params
     );
-    res.json({ users: rows.map((u) => ({ ...mapUser(u), caseCount: u.case_count })) });
+    const total = totalRows[0].count;
+
+    const rows = await query(
+      `SELECT u.*,
+              (SELECT COUNT(*)::int FROM sos_cases c WHERE c.user_id = u.id) AS case_count,
+              (SELECT MAX(a.created_at) FROM audit_log a WHERE a.user_id = u.id) AS last_active
+       FROM users u
+       ${where}
+       ORDER BY u.created_at DESC
+       LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+      [...params, size, offset]
+    );
+
+    res.json({
+      total,
+      page,
+      size,
+      users: rows.map((u) => ({
+        ...mapUser(u),
+        caseCount: u.case_count,
+        lastActive: u.last_active
+      }))
+    });
   } catch (error) {
     console.error('Admin users error:', error);
     res.status(500).json({ error: 'Error fetching users' });
@@ -247,24 +312,55 @@ router.delete('/users/:id', async (req, res) => {
 
 router.get('/cases', async (req, res) => {
   try {
-    const { status, limit } = req.query;
-    let sql = 'SELECT * FROM sos_cases';
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const size = Math.min(Math.max(parseInt(req.query.size) || 20, 1), 200);
+    const offset = (page - 1) * size;
+    const { status, priority, type, search, today } = req.query;
+
+    const conditions = [];
     const params = [];
 
     if (status && ['Pending', 'Resolved'].includes(status)) {
       params.push(status);
-      sql += ` WHERE status = $${params.length}`;
+      conditions.push(`status = $${params.length}`);
+    }
+    if (priority && ['High', 'Medium', 'Low'].includes(priority)) {
+      params.push(priority);
+      conditions.push(`priority = $${params.length}`);
+    }
+    if (type && type.trim()) {
+      params.push(type.trim());
+      conditions.push(`case_type ILIKE $${params.length}`);
+    }
+    if (search && search.trim()) {
+      params.push(`%${search.trim()}%`);
+      conditions.push(`(id::text ILIKE $${params.length} OR user_email ILIKE $${params.length} OR location_link ILIKE $${params.length})`);
+    }
+    if (today === '1') {
+      conditions.push('created_at::date = CURRENT_DATE');
     }
 
-    sql += ' ORDER BY created_at DESC';
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    if (limit) {
-      params.push(Math.min(Math.max(parseInt(limit) || 100, 1), 500));
-      sql += ` LIMIT $${params.length}`;
-    }
+    const totalRows = await query(
+      `SELECT COUNT(*)::int AS count FROM sos_cases ${where}`,
+      params
+    );
+    const total = totalRows[0].count;
 
-    const rows = await query(sql, params);
-    res.json({ cases: rows.map(mapCase) });
+    const rows = await query(
+      `SELECT c.*,
+              CASE WHEN c.status = 'Pending' THEN ROUND(EXTRACT(EPOCH FROM (now() - c.created_at)))::bigint ELSE NULL END AS waiting_duration,
+              CASE WHEN c.status = 'Resolved' THEN ROUND(EXTRACT(EPOCH FROM (c.updated_at - c.created_at)))::bigint ELSE NULL END AS resolution_time,
+              CASE WHEN c.status = 'Resolved' THEN c.updated_at ELSE NULL END AS resolved_at
+       FROM sos_cases c
+       ${where}
+       ORDER BY c.created_at DESC
+       LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+      [...params, size, offset]
+    );
+
+    res.json({ total, page, size, cases: rows.map(mapCase) });
   } catch (error) {
     console.error('Admin cases error:', error);
     res.status(500).json({ error: 'Error fetching cases' });
@@ -289,7 +385,7 @@ router.get('/cases/:id', async (req, res) => {
 
 router.put('/cases/:id', async (req, res) => {
   try {
-    const { status, notes } = req.body;
+    const { status, notes, priority, caseType, assignedOfficer } = req.body;
     const existing = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
     const existingCase = existing[0];
 
@@ -300,21 +396,32 @@ router.put('/cases/:id', async (req, res) => {
     if (status && !['Pending', 'Resolved'].includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
+    if (priority && !['High', 'Medium', 'Low'].includes(priority)) {
+      return res.status(400).json({ error: 'Invalid priority' });
+    }
 
     const oldStatus = existingCase.status;
-    let newStatus = status || oldStatus;
-    let notesUpdate = notes !== undefined ? notes : existingCase.notes;
+    const newStatus = status || oldStatus;
+    const newNotes = notes !== undefined ? notes : existingCase.notes;
+    const newPriority = priority || existingCase.priority;
+    const newType = caseType !== undefined && caseType.trim() ? caseType.trim() : existingCase.case_type;
+    const newOfficer = assignedOfficer !== undefined && assignedOfficer.trim() ? assignedOfficer.trim() : existingCase.assigned_officer;
 
     if (status && oldStatus !== status) {
       await auditLog(req.user.userId, existingCase.id, 'ADMIN_CASE_STATUS_CHANGED', `Admin ${req.user.email}: status changed from ${oldStatus} to ${status}`);
+    }
+    if (priority && existingCase.priority !== priority) {
+      await auditLog(req.user.userId, existingCase.id, 'ADMIN_CASE_PRIORITY_CHANGED', `Admin ${req.user.email}: priority changed from ${existingCase.priority} to ${priority}`);
     }
     if (notes !== undefined && notes !== existingCase.notes) {
       await auditLog(req.user.userId, existingCase.id, 'ADMIN_CASE_NOTES_UPDATED', `Admin ${req.user.email}: notes updated`);
     }
 
     await query(
-      'UPDATE sos_cases SET status = $1, notes = $2, updated_at = now() WHERE id = $3',
-      [newStatus, notesUpdate, req.params.id]
+      `UPDATE sos_cases
+       SET status = $1, notes = $2, priority = $3, case_type = $4, assigned_officer = $5, updated_at = now()
+       WHERE id = $6`,
+      [newStatus, newNotes, newPriority, newType, newOfficer, req.params.id]
     );
 
     const updated = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
@@ -325,28 +432,106 @@ router.put('/cases/:id', async (req, res) => {
   }
 });
 
+router.get('/contacts', async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const size = Math.min(Math.max(parseInt(req.query.size) || 20, 1), 100);
+    const offset = (page - 1) * size;
+    const search = (req.query.search || '').trim();
+
+    const conditions = [];
+    const params = [];
+
+    if (search) {
+      params.push(`%${search}%`);
+      conditions.push(`(c.name ILIKE $${params.length} OR c.phone ILIKE $${params.length} OR c.email ILIKE $${params.length} OR c.relation ILIKE $${params.length} OR u.email ILIKE $${params.length} OR u.name ILIKE $${params.length})`);
+    }
+
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const totalRows = await query(
+      `SELECT COUNT(*)::int AS count FROM contacts c LEFT JOIN users u ON u.id = c.user_id ${where}`,
+      params
+    );
+    const total = totalRows[0].count;
+
+    const rows = await query(
+      `SELECT c.*, u.email AS user_email, u.name AS user_name
+       FROM contacts c
+       LEFT JOIN users u ON u.id = c.user_id
+       ${where}
+       ORDER BY c.created_at DESC
+       LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+      [...params, size, offset]
+    );
+
+    res.json({ total, page, size, contacts: rows.map(mapContact) });
+  } catch (error) {
+    console.error('Admin contacts error:', error);
+    res.status(500).json({ error: 'Error fetching contacts' });
+  }
+});
+
 router.get('/audit-log', async (req, res) => {
   try {
-    const limit = Math.min(Math.max(parseInt(req.query.limit) || 200, 1), 1000);
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const size = Math.min(Math.max(parseInt(req.query.size) || 20, 1), 200);
+    const offset = (page - 1) * size;
+    const search = (req.query.search || '').trim();
+    const actionFilter = req.query.action;
+    const actorFilter = req.query.actor;
+
+    const conditions = [];
+    const params = [];
+
+    if (search) {
+      params.push(`%${search}%`);
+      conditions.push(`(a.action ILIKE $${params.length} OR a.details ILIKE $${params.length} OR a.id::text ILIKE $${params.length} OR COALESCE(a.case_id::text, '') ILIKE $${params.length})`);
+    }
+    if (actionFilter && actionFilter.trim()) {
+      params.push(actionFilter.trim());
+      conditions.push(`a.action ILIKE $${params.length}`);
+    }
+    if (actorFilter === 'admin') {
+      conditions.push("u.role = 'admin'");
+    } else if (actorFilter === 'user') {
+      conditions.push("u.role = 'user'");
+    }
+
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const totalRows = await query(
+      `SELECT COUNT(*)::int AS count FROM audit_log a LEFT JOIN users u ON u.id = a.user_id ${where}`,
+      params
+    );
+    const total = totalRows[0].count;
+
     const rows = await query(
       `SELECT a.id, a.user_id, a.case_id, a.action, a.details, a.created_at,
-              u.email AS user_email, u.name AS user_name
+              u.email AS user_email, u.name AS user_name, u.role AS user_role
        FROM audit_log a
        LEFT JOIN users u ON u.id = a.user_id
+       ${where}
        ORDER BY a.created_at DESC
-       LIMIT $1`,
-      [limit]
+       LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+      [...params, size, offset]
     );
-    res.json({ entries: rows.map((r) => ({
-      id: r.id,
-      userId: r.user_id,
-      caseId: r.case_id,
-      action: r.action,
-      details: r.details,
-      createdAt: r.created_at,
-      userEmail: r.user_email,
-      userName: r.user_name
-    })) });
+    res.json({
+      total,
+      page,
+      size,
+      entries: rows.map((r) => ({
+        id: r.id,
+        userId: r.user_id,
+        caseId: r.case_id,
+        action: r.action,
+        details: r.details,
+        createdAt: r.created_at,
+        userEmail: r.user_email,
+        userName: r.user_name,
+        userRole: r.user_role
+      }))
+    });
   } catch (error) {
     console.error('Admin audit-log error:', error);
     res.status(500).json({ error: 'Error fetching audit log' });
