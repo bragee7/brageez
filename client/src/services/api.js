@@ -73,6 +73,9 @@ export const adminAPI = {
   getCase: (id) => api.get(`/admin/cases/${id}`),
   updateCase: (id, data) => api.put(`/admin/cases/${id}`, data),
   getContacts: (params = {}) => api.get('/admin/contacts', { params }),
+  createContact: (data) => api.post('/admin/contacts', data),
+  updateContact: (id, data) => api.put(`/admin/contacts/${id}`, data),
+  deleteContact: (id) => api.delete(`/admin/contacts/${id}`),
   getAuditLog: (params = {}) => api.get('/admin/audit-log', { params })
 };
 

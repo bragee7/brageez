@@ -472,6 +472,102 @@ router.get('/contacts', async (req, res) => {
   }
 });
 
+router.post('/contacts', async (req, res) => {
+  try {
+    const { userId, name, phone, email, relation } = req.body;
+
+    if (!userId || !name || !phone) {
+      return res.status(400).json({ error: 'User ID, name and phone are required' });
+    }
+
+    const user = await query('SELECT id FROM users WHERE id = $1', [userId]);
+    if (user.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const result = await query(
+      `INSERT INTO contacts (user_id, name, phone, email, relation, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, now(), now()) RETURNING *`,
+      [userId, name, phone, email || '', relation || '']
+    );
+
+    await auditLog(req.user.userId, userId, 'CONTACT_ADDED', `Admin added contact: ${name} (${phone})`);
+
+    const row = await query(
+      `SELECT c.*, u.email AS user_email, u.name AS user_name
+       FROM contacts c LEFT JOIN users u ON u.id = c.user_id WHERE c.id = $1`,
+      [result[0].id]
+    );
+
+    res.status(201).json({ message: 'Contact added successfully', contact: mapContact(row[0]) });
+  } catch (error) {
+    console.error('Admin add contact error:', error);
+    res.status(500).json({ error: 'Error adding contact' });
+  }
+});
+
+router.put('/contacts/:id', async (req, res) => {
+  try {
+    const { name, phone, email, relation } = req.body;
+
+    const existing = await query('SELECT * FROM contacts WHERE id = $1', [req.params.id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    if (name !== undefined && !String(name).trim()) {
+      return res.status(400).json({ error: 'Name cannot be empty' });
+    }
+    if (phone !== undefined && !String(phone).trim()) {
+      return res.status(400).json({ error: 'Phone cannot be empty' });
+    }
+
+    const result = await query(
+      `UPDATE contacts SET
+         name = $1, phone = $2, email = $3, relation = $4, updated_at = now()
+       WHERE id = $5 RETURNING *`,
+      [
+        name !== undefined ? name : existing[0].name,
+        phone !== undefined ? phone : existing[0].phone,
+        email !== undefined ? email : existing[0].email,
+        relation !== undefined ? relation : existing[0].relation,
+        req.params.id
+      ]
+    );
+
+    await auditLog(req.user.userId, existing[0].user_id, 'CONTACT_UPDATED', `Admin updated contact: ${result[0].name}`);
+
+    const row = await query(
+      `SELECT c.*, u.email AS user_email, u.name AS user_name
+       FROM contacts c LEFT JOIN users u ON u.id = c.user_id WHERE c.id = $1`,
+      [req.params.id]
+    );
+
+    res.json({ message: 'Contact updated successfully', contact: mapContact(row[0]) });
+  } catch (error) {
+    console.error('Admin update contact error:', error);
+    res.status(500).json({ error: 'Error updating contact' });
+  }
+});
+
+router.delete('/contacts/:id', async (req, res) => {
+  try {
+    const existing = await query('SELECT * FROM contacts WHERE id = $1', [req.params.id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    await query('DELETE FROM contacts WHERE id = $1', [req.params.id]);
+
+    await auditLog(req.user.userId, existing[0].user_id, 'CONTACT_DELETED', `Admin deleted contact: ${existing[0].name}`);
+
+    res.json({ message: 'Contact deleted successfully' });
+  } catch (error) {
+    console.error('Admin delete contact error:', error);
+    res.status(500).json({ error: 'Error deleting contact' });
+  }
+});
+
 router.get('/audit-log', async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
