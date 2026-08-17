@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../models/sos_case.dart';
 import '../services/location_service.dart';
 import '../services/sos_service.dart';
 import '../services/voice_guard_service.dart';
@@ -285,14 +287,39 @@ class SosController extends ChangeNotifier {
       final latitude = _location?.latitude.toString() ?? '';
       final longitude = _location?.longitude.toString() ?? '';
 
-      final caseData = await _sosService.createCase(
-        videoPath: videoPath,
-        audioPath: '',
-        locationLink: locationLink,
-        latitude: latitude,
-        longitude: longitude,
-        notes: 'SOS Alert at ${DateTime.now().toLocal()}',
-      );
+      SosCase? caseData;
+      try {
+        caseData = await _sosService.createCase(
+          videoPath: videoPath,
+          audioPath: '',
+          locationLink: locationLink,
+          latitude: latitude,
+          longitude: longitude,
+          notes: 'SOS Alert at ${DateTime.now().toLocal()}',
+        );
+      } on DioException catch (e) {
+        final isConnectionDrop =
+            e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.unknown ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.error.toString().contains('Connection reset by peer') ||
+            e.error.toString().contains('SocketException') ||
+            e.error.toString().contains('Connection closed');
+
+        if (isConnectionDrop) {
+          caseData ??= await _verifyCaseDelivered();
+          caseData ??= await _sosService.createCase(
+              videoPath: videoPath,
+              audioPath: '',
+              locationLink: locationLink,
+              latitude: latitude,
+              longitude: longitude,
+              notes: 'SOS Alert at ${DateTime.now().toLocal()}',
+            );
+        } else {
+          rethrow;
+        }
+      }
 
       playAlertSound();
       _status = SosStatus.sent;
@@ -310,10 +337,25 @@ class SosController extends ChangeNotifier {
         notifyListeners();
       });
     } catch (e) {
-      _error = 'Failed to send emergency alert: $e';
+      _error = 'Failed to send emergency alert. Please check your connection and try again.';
       _status = SosStatus.idle;
       VoiceGuardService.resetDetectionCooldown();
       notifyListeners();
+    }
+  }
+
+  Future<SosCase?> _verifyCaseDelivered() async {
+    try {
+      final cases = await _sosService.getCases();
+      if (cases.isEmpty) return null;
+      final newest = cases.first;
+      final createdAt = newest.createdAt ?? newest.timestamp;
+      if (createdAt == null) return null;
+      final age = DateTime.now().toUtc().difference(createdAt.toUtc());
+      if (age.inSeconds <= 60) return newest;
+      return null;
+    } catch (_) {
+      return null;
     }
   }
 
