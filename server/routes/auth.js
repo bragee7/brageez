@@ -61,8 +61,8 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Name, personal email and password are required' });
     }
 
-    if (role === 'police') {
-      return res.status(403).json({ error: 'Police accounts cannot be self-registered' });
+    if (role === 'police' || role === 'admin') {
+      return res.status(403).json({ error: 'Police and admin accounts cannot be self-registered' });
     }
 
     const existingByPersonalEmail = await query('SELECT * FROM users WHERE personal_email = $1', [personalEmail]);
@@ -270,3 +270,4 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.generateGuardianEmail = generateGuardianEmail;

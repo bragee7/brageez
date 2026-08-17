@@ -130,8 +130,8 @@ router.post('/', authMiddleware, (req, res, next) => {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    if (req.user.role === 'police') {
-      return res.status(403).json({ error: 'Police accounts cannot create SOS cases' });
+    if (req.user.role === 'police' || req.user.role === 'admin') {
+      return res.status(403).json({ error: 'Police and admin accounts cannot create SOS cases' });
     }
 
     const videoFile = req.files?.video?.[0];
@@ -224,7 +224,7 @@ router.get('/', authMiddleware, async (req, res) => {
   try {
     let cases;
 
-    if (req.user.role === 'police') {
+    if (req.user.role === 'police' || req.user.role === 'admin') {
       cases = await query('SELECT * FROM sos_cases ORDER BY created_at DESC');
     } else {
       cases = await query('SELECT * FROM sos_cases WHERE user_id = $1 ORDER BY created_at DESC', [req.user.userId]);
@@ -273,7 +273,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Case not found' });
     }
 
-    if (req.user.role !== 'police' && caseData.user_id !== req.user.userId) {
+    if (req.user.role !== 'police' && req.user.role !== 'admin' && caseData.user_id !== req.user.userId) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -286,8 +286,8 @@ router.get('/:id', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    if (req.user.role !== 'police') {
-      return res.status(403).json({ error: 'Only police can update case status and notes' });
+    if (req.user.role !== 'police' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Only police and admin can update case status and notes' });
     }
 
     const { status, notes } = req.body;

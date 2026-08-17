@@ -35,6 +35,35 @@ const Navbar = () => {
               </Link>
             )}
 
+            {user?.role === 'admin' && (
+              <>
+                <Link 
+                  to="/admin" 
+                  className="text-gray-600 hover:text-purple-600 transition-colors font-medium"
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  to="/admin/users" 
+                  className="text-gray-600 hover:text-purple-600 transition-colors font-medium"
+                >
+                  Users
+                </Link>
+                <Link 
+                  to="/admin/cases" 
+                  className="text-gray-600 hover:text-purple-600 transition-colors font-medium"
+                >
+                  Cases
+                </Link>
+                <Link 
+                  to="/admin/audit" 
+                  className="text-gray-600 hover:text-purple-600 transition-colors font-medium"
+                >
+                  Audit Log
+                </Link>
+              </>
+            )}
+
             <div className="flex items-center space-x-3">
               <div className="text-sm text-right">
                 <p className="font-medium text-gray-800">{user?.name}</p>

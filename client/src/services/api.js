@@ -61,6 +61,20 @@ export const contactsAPI = {
   deleteContact: (id) => api.delete(`/contacts/${id}`)
 };
 
+export const adminAPI = {
+  getOverview: () => api.get('/admin/stats/overview'),
+  getRegistrations: (days = 30) => api.get(`/admin/stats/registrations?days=${days}`),
+  getCasesByDay: (days = 30) => api.get(`/admin/stats/cases-by-day?days=${days}`),
+  getCasesByUser: () => api.get('/admin/stats/cases-by-user'),
+  getUsers: () => api.get('/admin/users'),
+  createUser: (data) => api.post('/admin/users', data),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  getCases: (params = {}) => api.get('/admin/cases', { params }),
+  getCase: (id) => api.get(`/admin/cases/${id}`),
+  updateCase: (id, data) => api.put(`/admin/cases/${id}`, data),
+  getAuditLog: (limit = 200) => api.get(`/admin/audit-log?limit=${limit}`)
+};
+
 export const getMediaUrl = (path) => {
   if (!path) return null;
   if (path.startsWith('http')) return path;

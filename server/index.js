@@ -9,6 +9,7 @@ const { initSocket } = require('./socket');
 const authRoutes = require('./routes/auth');
 const sosRoutes = require('./routes/sos');
 const contactsRoutes = require('./routes/contacts');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = config.server.port;
@@ -38,6 +39,7 @@ initDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/sos', sosRoutes);
 app.use('/api/contacts', contactsRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({

@@ -6,7 +6,8 @@ import { useAuth } from '../context/AuthContext';
 const CaseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, isPolice } = useAuth();
+  const { user, isPolice, isAdmin } = useAuth();
+  const canManage = isPolice || isAdmin;
   const [caseData, setCaseData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -332,7 +333,7 @@ const CaseDetails = () => {
           </button>
         </div>
 
-        {isPolice && (
+        {canManage && (
           <div className="mt-6 bg-gray-800 rounded-xl p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Case Actions</h3>
             <div className="flex flex-wrap gap-4">

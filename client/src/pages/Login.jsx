@@ -26,12 +26,14 @@ const Login = () => {
     try {
       const response = await authAPI.login(formData);
       login(response.data.user, response.data.token);
-      if (response.data.user.role !== 'police') {
-        setError('This portal is for police only. Please use the ZELDA mobile app to access the user dashboard.');
+      if (response.data.user.role === 'police') {
+        navigate('/police');
+      } else if (response.data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        setError('This portal is for police and admin only. Please use the ZELDA mobile app to access the user dashboard.');
         logout();
-        return;
       }
-      navigate('/police');
     } catch (err) {
       const errData = err.response?.data;
       if (errData?.requiresVerification) {
@@ -145,12 +147,17 @@ const Login = () => {
         </div>
 
         <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center mb-4">Police Demo Account (pre-verified):</p>
+          <p className="text-xs text-gray-500 text-center mb-4">Demo Accounts (pre-verified):</p>
           <div className="grid grid-cols-1 gap-3 text-xs">
             <div className="bg-blue-50 p-3 rounded-lg text-center">
               <p className="font-semibold text-police-blue">Police</p>
               <p className="text-gray-600">police@guardian.com</p>
               <p className="text-gray-600">police123</p>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg text-center">
+              <p className="font-semibold text-purple-600">Admin</p>
+              <p className="text-gray-600">admin@guardian.com</p>
+              <p className="text-gray-600">Zelda@Admin#2026</p>
             </div>
           </div>
         </div>

@@ -3,9 +3,13 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import PoliceDashboard from './pages/PoliceDashboard';
 import CaseDetails from './pages/CaseDetails';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminCases from './pages/AdminCases';
+import AdminAuditLog from './pages/AdminAuditLog';
 import Navbar from './components/Navbar';
 
-const ProtectedRoute = ({ children, requiredRole }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
@@ -20,7 +24,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
     return <Navigate to="/use-app" replace />;
   }
 
@@ -39,7 +43,9 @@ const PublicRoute = ({ children }) => {
   }
 
   if (isAuthenticated) {
-    return <Navigate to={user?.role === 'police' ? '/police' : '/use-app'} replace />;
+    if (user?.role === 'police') return <Navigate to="/police" replace />;
+    if (user?.role === 'admin') return <Navigate to="/admin" replace />;
+    return <Navigate to="/use-app" replace />;
   }
 
   return children;
@@ -55,7 +61,7 @@ const UseApp = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-3">This Portal is for Police Only</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-3">This Portal is for Police & Admin Only</h1>
         <p className="text-gray-600 mb-6">
           The user dashboard and SOS features are available in the ZELDA mobile app.
           Please download and use the app to access your dashboard.
@@ -90,15 +96,47 @@ function AppRoutes() {
         <Route 
           path="/police" 
           element={
-            <ProtectedRoute requiredRole="police">
+            <ProtectedRoute allowedRoles={['police']}>
               <PoliceDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/users" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminUsers />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/cases" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminCases />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/audit" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminAuditLog />
             </ProtectedRoute>
           } 
         />
         <Route 
           path="/case/:id" 
           element={
-            <ProtectedRoute requiredRole="police">
+            <ProtectedRoute allowedRoles={['police', 'admin']}>
               <CaseDetails />
             </ProtectedRoute>
           } 

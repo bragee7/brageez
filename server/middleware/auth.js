@@ -28,6 +28,17 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
+const requireAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+  if (req.user.role !== 'admin') {
+    console.error(`[AUTH] 403: user ${req.user.email} (role=${req.user.role}) attempted admin access`);
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+};
+
 const optionalAuth = (req, res, next) => {
   const authHeader = req.headers.authorization;
   
@@ -49,4 +60,4 @@ const optionalAuth = (req, res, next) => {
   next();
 };
 
-module.exports = { authMiddleware, optionalAuth, JWT_SECRET };
+module.exports = { authMiddleware, requireAdmin, optionalAuth, JWT_SECRET };
