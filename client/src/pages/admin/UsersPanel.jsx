@@ -17,7 +17,7 @@ const USERS_ROLES = ['user', 'police'];
 const UsersPanel = ({ onClose, title }) => {
   const [data, setData] = useState({ total: 0, users: [] });
   const [page, setPage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(100);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [today, setToday] = useState(false);
