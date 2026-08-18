@@ -10,10 +10,11 @@ const AdminUsers = () => {
   const [deleting, setDeleting] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', personalEmail: '', password: '', role: 'user' });
+  const [search, setSearch] = useState('');
 
   const loadUsers = async () => {
     try {
-      const response = await adminAPI.getUsers();
+      const response = await adminAPI.getUsers({ page: 1, size: 100, search: search || undefined });
       setUsers(response.data.users);
       setLoading(false);
     } catch (err) {
@@ -24,7 +25,7 @@ const AdminUsers = () => {
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [search]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -82,6 +83,24 @@ const AdminUsers = () => {
           >
             {showForm ? 'Cancel' : '+ Add User'}
           </button>
+        </div>
+
+        <div className="relative mb-6 max-w-md">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or email..."
+            className="w-full px-4 py-2 pl-10 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
+          <svg
+            className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </div>
 
         {error && (
