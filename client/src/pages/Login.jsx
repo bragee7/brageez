@@ -146,21 +146,6 @@ const Login = () => {
           </p>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center mb-4">Demo Accounts (pre-verified):</p>
-          <div className="grid grid-cols-1 gap-3 text-xs">
-            <div className="bg-blue-50 p-3 rounded-lg text-center">
-              <p className="font-semibold text-police-blue">Police</p>
-              <p className="text-gray-600">police@guardian.com</p>
-              <p className="text-gray-600">police123</p>
-            </div>
-            <div className="bg-purple-50 p-3 rounded-lg text-center">
-              <p className="font-semibold text-purple-600">Admin</p>
-              <p className="text-gray-600">admin@guardian.com</p>
-              <p className="text-gray-600">Zelda@Admin#2026</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
