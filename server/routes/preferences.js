@@ -16,7 +16,7 @@ const validatePhrases = (phrases) => {
 
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const rows = await query('SELECT voice_phrases FROM user_preferences WHERE user_id = $1', [req.user.id]);
+    const rows = await query('SELECT voice_phrases FROM user_preferences WHERE user_id = $1', [req.user.userId]);
     if (rows.length === 0) {
       return res.json({ voicePhrases: DEFAULT_PHRASES });
     }
@@ -39,7 +39,7 @@ router.put('/', authMiddleware, async (req, res) => {
       `INSERT INTO user_preferences (user_id, voice_phrases)
        VALUES ($1, $2::jsonb)
        ON CONFLICT (user_id) DO UPDATE SET voice_phrases = EXCLUDED.voice_phrases`,
-      [req.user.id, JSON.stringify(phrases)]
+      [req.user.userId, JSON.stringify(phrases)]
     );
     res.json({ voicePhrases: phrases });
   } catch (error) {
