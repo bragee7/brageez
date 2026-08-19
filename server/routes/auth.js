@@ -53,6 +53,113 @@ router.get('/me', authMiddleware, async (req, res) => {
   }
 });
 
+router.put('/me', authMiddleware, async (req, res) => {
+  try {
+    const { name, currentPassword, password } = req.body;
+    const users = await query('SELECT * FROM users WHERE id = $1', [req.user.userId]);
+    const user = users[0];
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const updates = [];
+    const params = [];
+
+    if (name !== undefined) {
+      if (typeof name !== 'string' || !name.trim()) {
+        return res.status(400).json({ error: 'Name is required' });
+      }
+      updates.push(`name = $${params.length + 1}`);
+      params.push(name.trim());
+    }
+
+    if (password !== undefined) {
+      if (typeof password !== 'string' || password.length < 6) {
+        return res.status(400).json({ error: 'New password must be at least 6 characters' });
+      }
+      if (!currentPassword || typeof currentPassword !== 'string') {
+        return res.status(400).json({ error: 'Current password is required to change password' });
+      }
+      const valid = await bcrypt.compare(currentPassword, user.password);
+      if (!valid) {
+        return res.status(400).json({ error: 'Current password is incorrect' });
+      }
+      const hashed = await bcrypt.hash(password, 10);
+      updates.push(`password = $${params.length + 1}`);
+      params.push(hashed);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'Nothing to update' });
+    }
+
+    updates.push(`updated_at = now()`);
+    params.push(req.user.userId);
+    const updated = await query(
+      `UPDATE users SET ${updates.join(', ')} WHERE id = $${params.length} RETURNING id, name, email, role`,
+      params
+    );
+
+    if (password !== undefined) {
+      await auditLog(req.user.userId, null, 'PASSWORD_CHANGED', 'User changed their password');
+    }
+    if (name !== undefined) {
+      await auditLog(req.user.userId, null, 'PROFILE_UPDATED', 'User updated their name');
+    }
+
+    res.json({ message: 'Profile updated successfully', user: updated[0] });
+  } catch (error) {
+    console.error('Update me error:', error);
+    res.status(500).json({ error: 'Server error updating profile' });
+  }
+});
+
+router.get('/me/export', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const users = await query('SELECT * FROM users WHERE id = $1', [userId]);
+    const user = users[0];
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const cases = await query(
+      `SELECT id, user_id, user_email, location_link, latitude, longitude, status, notes,
+              video_url, audio_url, trigger_type, priority, case_type, assigned_officer,
+              closure_reason, first_response_at, created_at, updated_at
+         FROM sos_cases WHERE user_id = $1 ORDER BY created_at DESC`,
+      [userId]
+    );
+
+    const contacts = await query(
+      `SELECT id, user_id, name, phone, email, relation, priority, created_at, updated_at
+         FROM contacts WHERE user_id = $1 ORDER BY priority ASC, created_at ASC`,
+      [userId]
+    );
+
+    res.json({
+      exportedAt: new Date().toISOString(),
+      profile: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        personalEmail: user.personal_email,
+        role: user.role,
+        isVerified: user.is_verified,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at
+      },
+      cases,
+      contacts
+    });
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ error: 'Server error exporting data' });
+  }
+});
+
 router.post('/register', async (req, res) => {
   try {
     const { name, personalEmail, password, role } = req.body;

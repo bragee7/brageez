@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminCases from './pages/AdminCases';
 import AdminAuditLog from './pages/AdminAuditLog';
+import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -138,6 +139,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRoles={['police', 'admin']}>
               <CaseDetails />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           } 
         />

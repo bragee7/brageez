@@ -39,7 +39,10 @@ export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
   verifyOTP: (data) => api.post('/auth/verify-otp', data),
-  resendOTP: (data) => api.post('/auth/resend-otp', data)
+  resendOTP: (data) => api.post('/auth/resend-otp', data),
+  getMe: () => api.get('/auth/me'),
+  updateMe: (data) => api.put('/auth/me', data),
+  exportMe: () => api.get('/auth/me/export')
 };
 
 export const sosAPI = {

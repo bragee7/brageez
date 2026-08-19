@@ -64,6 +64,13 @@ const Navbar = () => {
               </>
             )}
 
+            <Link 
+              to="/profile" 
+              className="text-gray-600 hover:text-emergency-red transition-colors font-medium"
+            >
+              Profile
+            </Link>
+
             <div className="flex items-center space-x-3">
               <div className="text-sm text-right">
                 <p className="font-medium text-gray-800">{user?.name}</p>

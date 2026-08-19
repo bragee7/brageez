@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const config = require('./config');
 const { pool } = require('./db');
@@ -16,6 +17,36 @@ const PORT = config.server.port;
 const httpServer = http.createServer(app);
 
 initSocket(httpServer);
+
+app.set('trust proxy', 1);
+
+const rateLimitMsg = 'Too many requests. Please try again later.';
+const rlWindowMs = Number(process.env.RATE_LIMIT_WINDOW) || 15 * 60 * 1000;
+const rlMax = Number(process.env.RATE_LIMIT_MAX) || 300;
+
+const generalLimiter = rateLimit({
+  windowMs: rlWindowMs,
+  max: rlMax,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: rateLimitMsg }
+});
+
+const strictLimiter = (windowMs, max) =>
+  rateLimit({
+    windowMs,
+    max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: rateLimitMsg }
+  });
+
+app.use('/api/', generalLimiter);
+app.use('/api/auth/login', strictLimiter(rlWindowMs, 10));
+app.use('/api/auth/register', strictLimiter(60 * 60 * 1000, 5));
+app.use('/api/auth/verify-otp', strictLimiter(rlWindowMs, 10));
+app.use('/api/auth/resend-otp', strictLimiter(rlWindowMs, 10));
+app.post('/api/sos', strictLimiter(rlWindowMs, 10));
 
 app.use(cors());
 app.use(express.json());

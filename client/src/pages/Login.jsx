@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,6 +9,8 @@ const Login = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const expired = searchParams.get('expired') === '1';
   const { login, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -58,6 +60,12 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-gray-800">Women Safety Guardian</h1>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>
+
+        {expired && (
+          <div className="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-lg mb-6">
+            Your session expired due to inactivity. Please sign in again.
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6 animate-shake">
