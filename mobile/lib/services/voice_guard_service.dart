@@ -24,8 +24,18 @@ class VoiceGuardService {
   static const fgsNotificationId = 256;
   static const alarmNotificationId = 257;
 
-  /// The ONLY phrase that triggers an SOS. Change this to any word or phrase.
-  static const keywords = ['help me'];
+  /// The phrases that trigger an SOS. Configurable at runtime.
+  static List<String> keywords = ['help me'];
+
+  /// Replace the trigger phrases with a new list (empty lists are rejected).
+  static void setKeywords(List<String> list) {
+    final cleaned = list
+        .map((k) => k.trim())
+        .where((k) => k.isNotEmpty)
+        .toList();
+    if (cleaned.isEmpty) return;
+    keywords = cleaned;
+  }
 
   static final FlutterBackgroundService _service = FlutterBackgroundService();
   static final FlutterLocalNotificationsPlugin _notifications =

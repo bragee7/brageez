@@ -13,6 +13,7 @@ import '../core/theme.dart';
 import '../core/widgets.dart';
 import '../models/emergency_contact.dart';
 import '../services/voice_guard_service.dart';
+import '../core/api_client.dart';
 import '../state/auth_provider.dart';
 import '../state/contacts_provider.dart';
 import '../state/sos_controller.dart';
@@ -37,6 +38,9 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
   final _emailController = TextEditingController();
   String _relation = '';
   int _priority = 1;
+  List<String> _phrases = [];
+  bool _phrasesLoading = true;
+  final _phraseCtrl = TextEditingController();
 
   static const _relations = ['Parent', 'Spouse', 'Sibling', 'Friend', 'Colleague', 'Other'];
   static const _priorities = [1, 2, 3, 4, 5];
@@ -55,6 +59,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
       context.read<SosController>().init();
       context.read<ContactsProvider>().fetchContacts();
       _maybeAutoStartVoice();
+      _loadPhrases();
       VoiceGuardService.consumePendingTrigger();
     });
   }
@@ -74,12 +79,72 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     }
   }
 
+  Future<void> _loadPhrases() async {
+    try {
+      final res = await ApiClient.instance.get('preferences');
+      final raw = res.data['voicePhrases'] as List?;
+      final phrases = raw?.whereType<String>().map((p) => p.trim()).toList() ?? [];
+      final next = phrases.isEmpty ? const ['help me'] : phrases;
+      if (!mounted) return;
+      setState(() {
+        _phrases = next;
+        _phrasesLoading = false;
+      });
+      VoiceGuardService.setKeywords(next);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _phrases = const ['help me'];
+        _phrasesLoading = false;
+      });
+      VoiceGuardService.setKeywords(const ['help me']);
+    }
+  }
+
+  Future<void> _savePhrases(List<String> next) async {
+    try {
+      await ApiClient.instance.put('preferences', {'voicePhrases': next});
+      if (!mounted) return;
+      setState(() => _phrases = List.of(next));
+      VoiceGuardService.setKeywords(next);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not save phrases. Try again.')),
+      );
+    }
+  }
+
+  void _addPhrase() {
+    final text = _phraseCtrl.text.trim();
+    if (text.isEmpty) return;
+    if (_phrases.length >= 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Maximum 10 phrases allowed.')),
+      );
+      return;
+    }
+    if (_phrases.any((p) => p.toLowerCase() == text.toLowerCase())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('That phrase already exists.')),
+      );
+      return;
+    }
+    _phraseCtrl.clear();
+    _savePhrases([..._phrases, text]);
+  }
+
+  void _removePhrase(String phrase) {
+    _savePhrases(_phrases.where((p) => p != phrase).toList());
+  }
+
   @override
   void dispose() {
     _glowController.dispose();
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
+    _phraseCtrl.dispose();
     super.dispose();
   }
 
@@ -289,6 +354,8 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
                         _buildAlertsHistory(),
                         const SizedBox(height: 16),
                         _buildHowItWorks(),
+                        const SizedBox(height: 16),
+                        _buildVoicePhrasesSettings(),
                         if (sos.showPreview &&
                             (sos.recordedVideoPath != null ||
                                 sos.recordedAudioPath != null))
@@ -1227,6 +1294,90 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
               ),
               Expanded(
                 child: _howItWorksStep('3', AppColors.red600, '30-second recording will be sent to police'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVoicePhrasesSettings() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.gray800,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Voice Guard Phrases',
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Phrases that trigger an emergency SOS when spoken aloud.',
+            style: TextStyle(fontSize: 13, color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          if (_phrasesLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else if (_phrases.isEmpty)
+            const Text(
+              'No phrases yet. Add one below.',
+              style: TextStyle(fontSize: 13, color: Colors.grey),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _phrases
+                  .map(
+                    (p) => InputChip(
+                      label: Text(p),
+                      labelStyle: const TextStyle(color: Colors.white, fontSize: 13),
+                      backgroundColor: AppColors.gray700,
+                      deleteIconColor: AppColors.red600,
+                      onDeleted: () => _removePhrase(p),
+                    ),
+                  )
+                  .toList(),
+            ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _phraseCtrl,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'e.g. Help Me',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    filled: true,
+                    fillColor: AppColors.gray700,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  onSubmitted: (_) => _addPhrase(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: _addPhrase,
+                icon: const Icon(Icons.add, color: Colors.white),
+                tooltip: 'Add phrase',
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.red600,
+                ),
               ),
             ],
           ),

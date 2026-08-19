@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const sosRoutes = require('./routes/sos');
 const contactsRoutes = require('./routes/contacts');
 const adminRoutes = require('./routes/admin');
+const preferencesRoutes = require('./routes/preferences');
 
 const app = express();
 const PORT = config.server.port;
@@ -71,6 +72,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sos', sosRoutes);
 app.use('/api/contacts', contactsRoutes);
 app.use('/api/admin', adminRoutes);
+  app.use('/api/preferences', preferencesRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({

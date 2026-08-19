@@ -195,6 +195,58 @@ router.get('/stats/officer-kpis', async (req, res) => {
   }
 });
 
+router.get('/stats/status-distribution', async (req, res) => {
+  try {
+    const rows = await query(
+      `SELECT status, COUNT(*)::int AS count
+       FROM sos_cases
+       GROUP BY status
+       ORDER BY count DESC`
+    );
+    res.json({ distribution: rows });
+  } catch (error) {
+    console.error('Admin status-distribution error:', error);
+    res.status(500).json({ error: 'Error fetching status distribution' });
+  }
+});
+
+router.get('/stats/series', async (req, res) => {
+  try {
+    const period = req.query.period === 'month' ? 'month' : 'week';
+    const buckets = period === 'month' ? 6 : 8;
+    const rows = await query(
+      `SELECT to_char(d.day, 'YYYY-MM-DD') AS day, COUNT(s.id)::int AS count
+       FROM generate_series(
+         date_trunc('${period}', CURRENT_DATE) - (($1::int - 1) * interval '1 ${period}'),
+         date_trunc('${period}', CURRENT_DATE),
+         interval '1 ${period}'
+       ) AS d(day)
+       LEFT JOIN sos_cases s ON date_trunc('${period}', s.created_at) = d.day
+       GROUP BY d.day
+       ORDER BY d.day ASC`,
+      [buckets]
+    );
+    res.json({ period, buckets, series: rows });
+  } catch (error) {
+    console.error('Admin series error:', error);
+    res.status(500).json({ error: 'Error fetching case series' });
+  }
+});
+
+router.get('/stats/geo', async (req, res) => {
+  try {
+    const rows = await query(
+      `SELECT latitude, longitude
+       FROM sos_cases
+       WHERE latitude IS NOT NULL AND longitude IS NOT NULL`
+    );
+    res.json({ points: rows });
+  } catch (error) {
+    console.error('Admin geo error:', error);
+    res.status(500).json({ error: 'Error fetching geo data' });
+  }
+});
+
 router.get('/stats/cases-by-user', async (req, res) => {
   try {
     const rows = await query(

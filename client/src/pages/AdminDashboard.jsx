@@ -14,6 +14,7 @@ import ContactsPanel from './admin/ContactsPanel';
 import AuditEntriesPanel from './admin/AuditEntriesPanel';
 import ResponseTimesPanel from './admin/ResponseTimesPanel';
 import OfficerKpisPanel from './admin/OfficerKpisPanel';
+import HeatmapView from '../components/HeatmapView';
 
 const StatCard = ({ label, value, icon, accent, onClick, ariaLabel }) => {
   return (
@@ -103,19 +104,29 @@ function AdminDashboard() {
   const [error, setError] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSection, setSelectedSection] = useState(null);
+  const [statusDist, setStatusDist] = useState([]);
+  const [geoPoints, setGeoPoints] = useState([]);
+  const [seriesPeriod, setSeriesPeriod] = useState('week');
+  const [seriesData, setSeriesData] = useState([]);
 
   const loadData = useCallback(async () => {
     try {
-      const [ov, reg, cbd, cbu] = await Promise.all([
+      const [ov, reg, cbd, cbu, sd, geo, sdata] = await Promise.all([
         adminAPI.getOverview(),
         adminAPI.getRegistrations(30),
         adminAPI.getCasesByDay(30),
         adminAPI.getCasesByUser(),
+        adminAPI.getStatusDistribution(),
+        adminAPI.getGeo(),
+        adminAPI.getSeries(seriesPeriod),
       ]);
       setOverview(ov.data);
       setRegistrations(reg.data.series || []);
       setCasesByDay(cbd.data.series || []);
       setCasesByUser(cbu.data.users || []);
+      setStatusDist(sd.data.distribution || []);
+      setGeoPoints(geo.data.points || []);
+      setSeriesData(sdata.data.series || []);
       setError('');
     } catch (e) {
       setError('Failed to load dashboard data. Please try again.');
@@ -123,7 +134,7 @@ function AdminDashboard() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [seriesPeriod]);
 
   useEffect(() => {
     loadData();
@@ -133,6 +144,24 @@ function AdminDashboard() {
     setRefreshing(true);
     loadData();
   };
+
+  const handlePeriodChange = async (period) => {
+    setSeriesPeriod(period);
+    try {
+      const res = await adminAPI.getSeries(period);
+      setSeriesData(res.data.series || []);
+    } catch (e) {
+      setError('Failed to load case trend data.');
+    }
+  };
+
+  const statusColors = {
+    Pending: 'bg-yellow-500',
+    Resolved: 'bg-green-500',
+    Assigned: 'bg-blue-500',
+    Closed: 'bg-red-500',
+  };
+  const maxStatusCount = Math.max(...statusDist.map((s) => Number(s.count) || 0), 1);
 
   if (loading) {
     return (
@@ -200,6 +229,71 @@ function AdminDashboard() {
             color="bg-red-500"
             label="Cases"
           />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="bg-gray-800 rounded-xl p-6">
+            <h3 className="text-xl font-semibold text-white mb-6">Cases by Status</h3>
+            <div className="space-y-4">
+              {statusDist.length === 0 && (
+                <p className="text-gray-400 text-sm">No case data available.</p>
+              )}
+              {statusDist.map((s) => (
+                <div key={s.status}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-gray-300 font-medium">{s.status}</span>
+                    <span className="text-white font-bold">{s.count}</span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div
+                      className={`${statusColors[s.status] || 'bg-purple-500'} h-2 rounded-full`}
+                      style={{ width: `${(Number(s.count) / maxStatusCount) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-gray-800 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Case Trend</h3>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => handlePeriodChange('week')}
+                  className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                    seriesPeriod === 'week'
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  Weekly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handlePeriodChange('month')}
+                  className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                    seriesPeriod === 'month'
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  Monthly
+                </button>
+              </div>
+            </div>
+            <DashboardChart
+              title={`Cases by ${seriesPeriod === 'month' ? 'Month' : 'Week'}`}
+              series={seriesData}
+              color="bg-cyan-500"
+              label="Cases"
+            />
+          </div>
+        </div>
+
+        <div className="bg-gray-800 rounded-xl p-6 mb-8">
+          <h3 className="text-xl font-semibold text-white mb-6">Case Heatmap</h3>
+          <HeatmapView points={geoPoints} height="h-96" emptyText="No geolocated cases available" />
         </div>
 
         <div className="bg-gray-800 rounded-xl p-6">

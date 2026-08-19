@@ -9,6 +9,7 @@ import AdminCases from './pages/AdminCases';
 import AdminAuditLog from './pages/AdminAuditLog';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
+import FloatingSosButton from './components/FloatingSosButton';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, user, loading } = useAuth();
@@ -151,6 +152,7 @@ function AppRoutes() {
           } 
         />
       </Routes>
+      <FloatingSosButton />
     </>
   );
 }
