@@ -9,7 +9,7 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
   try {
     const contacts = await query(
-      'SELECT * FROM contacts WHERE user_id = $1 ORDER BY created_at DESC',
+      'SELECT * FROM contacts WHERE user_id = $1 ORDER BY priority ASC, created_at DESC',
       [req.user.userId]
     );
     res.json({ contacts });
@@ -21,16 +21,18 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, email, relation } = req.body;
+    const { name, phone, email, relation, priority } = req.body;
 
     if (!name || !phone) {
       return res.status(400).json({ error: 'Name and phone are required' });
     }
 
+    const contactPriority = Math.max(1, Math.min(5, parseInt(priority, 10) || 1));
+
     const result = await query(
-      `INSERT INTO contacts (user_id, name, phone, email, relation, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, now(), now()) RETURNING id`,
-      [req.user.userId, name, phone, email || '', relation || '']
+      `INSERT INTO contacts (user_id, name, phone, email, relation, priority, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, now(), now()) RETURNING id`,
+      [req.user.userId, name, phone, email || '', relation || '', contactPriority]
     );
 
     await auditLog(req.user.userId, null, 'CONTACT_ADDED', `Contact added: ${name} (${phone})`);
@@ -41,7 +43,8 @@ router.post('/', async (req, res) => {
       name,
       phone,
       email: email || '',
-      relation: relation || ''
+      relation: relation || '',
+      priority: contactPriority
     };
 
     res.status(201).json({ message: 'Contact added successfully', contact: newContact });
@@ -53,7 +56,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const { name, phone, email, relation } = req.body;
+    const { name, phone, email, relation, priority } = req.body;
 
     const existing = await query(
       'SELECT * FROM contacts WHERE id = $1 AND user_id = $2',
@@ -64,9 +67,13 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Contact not found' });
     }
 
+    const contactPriority = priority !== undefined
+      ? Math.max(1, Math.min(5, parseInt(priority, 10) || 1))
+      : existing[0].priority;
+
     await query(
-      'UPDATE contacts SET name = $1, phone = $2, email = $3, relation = $4, updated_at = now() WHERE id = $5 AND user_id = $6',
-      [name || existing[0].name, phone || existing[0].phone, email !== undefined ? email : existing[0].email, relation !== undefined ? relation : existing[0].relation, req.params.id, req.user.userId]
+      'UPDATE contacts SET name = $1, phone = $2, email = $3, relation = $4, priority = $5, updated_at = now() WHERE id = $6 AND user_id = $7',
+      [name || existing[0].name, phone || existing[0].phone, email !== undefined ? email : existing[0].email, relation !== undefined ? relation : existing[0].relation, contactPriority, req.params.id, req.user.userId]
     );
 
     await auditLog(req.user.userId, null, 'CONTACT_UPDATED', `Contact updated: ${name || existing[0].name}`);

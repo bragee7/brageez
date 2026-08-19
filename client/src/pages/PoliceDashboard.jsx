@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { sosAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import MapView from '../components/MapView';
 
 const PoliceDashboard = () => {
   const { user } = useAuth();
@@ -87,6 +88,14 @@ const PoliceDashboard = () => {
   const pendingCases = cases.filter(c => c.status === 'Pending');
   const resolvedCases = cases.filter(c => c.status === 'Resolved');
 
+  const mapMarkers = cases
+    .filter(c => c.latitude && c.longitude)
+    .map(c => ({
+      lat: Number(c.latitude),
+      lng: Number(c.longitude),
+      popupHtml: `<b>${c.status} Case</b><br/>From: ${c.userEmail || 'Unknown User'}<br/>${formatDate(c.timestamp)}${c.locationLink ? `<br/><a href="${c.locationLink}" target="_blank" rel="noopener noreferrer" style="color:#60a5fa">View Location</a>` : ''}`,
+    }));
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -168,6 +177,16 @@ const PoliceDashboard = () => {
           </div>
         </div>
 
+        <div className="bg-gray-800 rounded-xl mb-8 overflow-hidden">
+          <div className="p-6 border-b border-gray-700">
+            <h2 className="text-2xl font-bold text-white">Live Emergency Map</h2>
+            <p className="text-gray-400 text-sm mt-1">Real-time location of reported emergencies</p>
+          </div>
+          <div className="p-4">
+            <MapView markers={mapMarkers} height="h-96" emptyText="No location data available for cases" />
+          </div>
+        </div>
+
         <div className="bg-gray-800 rounded-xl overflow-hidden">
           <div className="p-6 border-b border-gray-700">
             <h2 className="text-2xl font-bold text-white">Emergency Cases</h2>
@@ -241,6 +260,11 @@ const PoliceDashboard = () => {
                         <span className="text-green-400 text-xs flex items-center ml-2">
                           <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse mr-1"></span>
                           LIVE
+                        </span>
+                      )}
+                      {caseItem.closureReason && (
+                        <span className="text-xs bg-gray-700 text-gray-300 px-3 py-1 rounded-full ml-2">
+                          Closed: {caseItem.closureReason}
                         </span>
                       )}
                     </div>

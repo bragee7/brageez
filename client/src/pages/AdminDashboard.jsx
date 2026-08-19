@@ -12,6 +12,8 @@ import TodayCasesPanel from './admin/TodayCasesPanel';
 import TodayUsersPanel from './admin/TodayUsersPanel';
 import ContactsPanel from './admin/ContactsPanel';
 import AuditEntriesPanel from './admin/AuditEntriesPanel';
+import ResponseTimesPanel from './admin/ResponseTimesPanel';
+import OfficerKpisPanel from './admin/OfficerKpisPanel';
 
 const StatCard = ({ label, value, icon, accent, onClick, ariaLabel }) => {
   return (
@@ -69,6 +71,14 @@ const STAT_ICONS = {
     bg: 'bg-indigo-900/50', color: 'text-indigo-400',
     path: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
   },
+  responseTimes: {
+    bg: 'bg-cyan-900/50', color: 'text-cyan-400',
+    path: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+  },
+  officerKpis: {
+    bg: 'bg-purple-900/50', color: 'text-purple-400',
+    path: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+  },
 };
 
 const PANELS = {
@@ -79,8 +89,10 @@ const PANELS = {
   casesToday: { Component: TodayCasesPanel, title: "Today's Cases" },
   usersToday: { Component: TodayUsersPanel, title: "Today's New Users" },
   contacts: { Component: ContactsPanel, title: 'Contacts Management' },
-  auditEntries: { Component: AuditEntriesPanel, title: 'Audit Logs' },
-};
+    auditEntries: { Component: AuditEntriesPanel, title: 'Audit Logs' },
+    responseTimes: { Component: ResponseTimesPanel, title: 'Response Times' },
+    officerKpis: { Component: OfficerKpisPanel, title: 'Officer KPIs' },
+  };
 
 function AdminDashboard() {
   const [overview, setOverview] = useState(null);
@@ -139,6 +151,8 @@ function AdminDashboard() {
     { key: 'usersToday', label: 'Users Today', value: overview?.usersToday ?? 0, accent: 'border-blue-500', section: 'usersToday' },
     { key: 'contacts', label: 'Contacts', value: overview?.totalContacts ?? 0, accent: 'border-teal-500', section: 'contacts' },
     { key: 'auditEntries', label: 'Audit Entries', value: overview?.auditCount ?? 0, accent: 'border-indigo-500', section: 'auditEntries' },
+    { key: 'responseTimes', label: 'Response Times', value: overview?.avgResponseMinutes ?? 0, accent: 'border-cyan-500', section: 'responseTimes' },
+    { key: 'officerKpis', label: 'Officer KPIs', value: 0, accent: 'border-purple-500', section: 'officerKpis' },
   ];
 
   const topUsers = casesByUser.slice(0, 10);

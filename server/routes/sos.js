@@ -3,6 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const { authMiddleware } = require('../middleware/auth');
 const { query, auditLog } = require('../db');
@@ -59,6 +60,13 @@ const uploadMedia = async (file) => {
   if (!supabase) return null;
   const fileName = `${uuidv4()}${extname(file.mimetype)}`;
   const fileSize = file.size || 0;
+
+  let sha256 = null;
+  try {
+    const buffer = fs.readFileSync(file.path);
+    sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
+  } catch (_) {}
+
   const { error } = await supabase.storage
     .from(MEDIA_BUCKET)
     .upload(fileName, fs.createReadStream(file.path), {
@@ -77,7 +85,7 @@ const uploadMedia = async (file) => {
     .from(MEDIA_BUCKET)
     .getPublicUrl(fileName);
 
-  return data.publicUrl;
+  return { publicUrl: data.publicUrl, sha256 };
 };
 
 const notifySOS = async (caseForEmail, videoUrl, audioUrl, userId) => {
@@ -137,15 +145,19 @@ router.post('/', authMiddleware, (req, res, next) => {
     const videoFile = req.files?.video?.[0];
     const audioFile = req.files?.audio?.[0];
 
-    const videoUrl = await uploadMedia(videoFile);
-    const audioUrl = await uploadMedia(audioFile);
+    const videoMedia = await uploadMedia(videoFile);
+    const audioMedia = await uploadMedia(audioFile);
+    const videoUrl = videoMedia ? videoMedia.publicUrl : null;
+    const audioUrl = audioMedia ? audioMedia.publicUrl : null;
+    const videoSha256 = videoMedia ? videoMedia.sha256 : null;
+    const audioSha256 = audioMedia ? audioMedia.sha256 : null;
 
     const createdAt = new Date();
     const updatedAt = new Date();
 
     const result = await query(
-      `INSERT INTO sos_cases (user_id, user_email, location_link, latitude, longitude, status, notes, video_url, audio_url, trigger_type, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+      `INSERT INTO sos_cases (user_id, user_email, location_link, latitude, longitude, status, notes, video_url, audio_url, video_sha256, audio_sha256, trigger_type, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id`,
       [
         req.user.userId,
         req.user.email,
@@ -156,6 +168,8 @@ router.post('/', authMiddleware, (req, res, next) => {
         notes || '',
         videoUrl,
         audioUrl,
+        videoSha256,
+        audioSha256,
         'manual',
         createdAt,
         updatedAt
@@ -187,6 +201,8 @@ router.post('/', authMiddleware, (req, res, next) => {
       notes: notes || '',
       video_url: videoUrl,
       audio_url: audioUrl,
+      video_sha256: videoSha256,
+      audio_sha256: audioSha256,
       created_at: createdAt,
       updated_at: updatedAt
     };
@@ -214,10 +230,13 @@ const mapCase = (c) => ({
   notes: c.notes,
   videoUrl: c.video_url,
   audioUrl: c.audio_url,
+  videoSha256: c.video_sha256,
+  audioSha256: c.audio_sha256,
   triggerType: c.trigger_type,
   timestamp: c.created_at,
   createdAt: c.created_at,
-  updatedAt: c.updated_at
+  updatedAt: c.updated_at,
+  closureReason: c.closure_reason
 });
 
 router.get('/', authMiddleware, async (req, res) => {
@@ -284,13 +303,44 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/:id/timeline', authMiddleware, async (req, res) => {
+  try {
+    const cases = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
+    const caseData = cases[0];
+
+    if (!caseData) {
+      return res.status(404).json({ error: 'Case not found' });
+    }
+
+    if (req.user.role !== 'police' && req.user.role !== 'admin' && caseData.user_id !== req.user.userId) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const events = await query(
+      'SELECT action, details, created_at FROM audit_log WHERE case_id = $1 ORDER BY created_at DESC',
+      [req.params.id]
+    );
+
+    res.json({
+      timeline: events.map((e) => ({
+        action: e.action,
+        details: e.details,
+        createdAt: e.created_at,
+      })),
+    });
+  } catch (error) {
+    console.error('Get case timeline error:', error);
+    res.status(500).json({ error: 'Error fetching case timeline' });
+  }
+});
+
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'police' && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Only police and admin can update case status and notes' });
     }
 
-    const { status, notes } = req.body;
+    const { status, notes, closureReason } = req.body;
     const updatedAt = new Date();
 
     const existingCases = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
@@ -304,20 +354,43 @@ router.put('/:id', authMiddleware, async (req, res) => {
     let newStatus = oldStatus;
     let notesUpdate = existingCase.notes;
 
+    const allowedClosureReasons = [
+      'False Alarm',
+      'Victim Safe',
+      'Police Intervention',
+      'Emergency Resolved',
+      'Duplicate Case',
+      'Other'
+    ];
+
     if (status) {
       newStatus = status;
+      if (status === 'Resolved' && oldStatus !== 'Resolved') {
+        if (!closureReason || !String(closureReason).trim()) {
+          return res.status(400).json({ error: 'A closure reason is required when resolving a case' });
+        }
+        if (!allowedClosureReasons.includes(closureReason)) {
+          return res.status(400).json({ error: 'Invalid closure reason' });
+        }
+        await auditLog(req.user.userId, existingCase.id, 'CASE_CLOSED', `Case resolved. Reason: ${closureReason}`);
+      }
       if (oldStatus !== status) {
         await auditLog(req.user.userId, existingCase.id, 'CASE_STATUS_CHANGED', `Status changed from ${oldStatus} to ${status}`);
       }
     }
+
     if (notes !== undefined) {
       notesUpdate = notes;
-      await auditLog(req.user.userId, existingCase.id, 'CASE_NOTES_UPDATED', `Notes updated: ${notes}`);
+      await auditLog(req.user.userId, existingCase.id, 'CASE_NOTES_UPDATED', 'Case notes updated');
     }
 
+    const closureReasonValue = closureReason && String(closureReason).trim() && newStatus === 'Resolved'
+      ? String(closureReason).trim()
+      : existingCase.closure_reason;
+
     await query(
-      'UPDATE sos_cases SET status = $1, notes = $2, updated_at = $3 WHERE id = $4',
-      [newStatus, notesUpdate, updatedAt, req.params.id]
+      'UPDATE sos_cases SET status = $1, notes = $2, closure_reason = $3, first_response_at = COALESCE(first_response_at, now()), updated_at = $4 WHERE id = $5',
+      [newStatus, notesUpdate, closureReasonValue, updatedAt, req.params.id]
     );
 
     const updatedCases = await query('SELECT * FROM sos_cases WHERE id = $1', [req.params.id]);
@@ -364,6 +437,8 @@ router.put('/:id/location', authMiddleware, async (req, res) => {
       'UPDATE sos_cases SET latitude = $1, longitude = $2, location_link = $3, updated_at = $4 WHERE id = $5',
       [latValue, lngValue, locValue, updatedAt, req.params.id]
     );
+
+    await auditLog(req.user.userId, existingCase.id, 'LOCATION_UPDATED', `Location updated to ${latValue}, ${lngValue}`);
 
     res.json({
       message: 'Location updated',

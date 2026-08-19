@@ -30,12 +30,14 @@ class ContactsProvider extends ChangeNotifier {
     required String phone,
     String email = '',
     String relation = '',
+    int priority = 1,
   }) async {
     await _contactsService.addContact(
       name: name,
       phone: phone,
       email: email,
       relation: relation,
+      priority: priority,
     );
     await fetchContacts();
   }
@@ -46,6 +48,7 @@ class ContactsProvider extends ChangeNotifier {
     required String phone,
     String email = '',
     String relation = '',
+    int priority = 1,
   }) async {
     await _contactsService.updateContact(
       id,
@@ -53,6 +56,7 @@ class ContactsProvider extends ChangeNotifier {
       phone: phone,
       email: email,
       relation: relation,
+      priority: priority,
     );
     await fetchContacts();
   }

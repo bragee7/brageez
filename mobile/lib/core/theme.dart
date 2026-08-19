@@ -68,6 +68,9 @@ class AppColors {
   static const pink700 = Color(0xFFBE185D);
   static const pink50 = Color(0xFFFDF2F8);
   static const pink100 = Color(0xFFFCE7F3);
+
+  static const amber300 = Color(0xFFFCD34D);
+  static const amber900 = Color(0xFF78350F);
 }
 
 class AppTheme {

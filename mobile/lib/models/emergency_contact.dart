@@ -5,6 +5,7 @@ class EmergencyContact {
   final String phone;
   final String email;
   final String relation;
+  final int priority;
 
   const EmergencyContact({
     required this.id,
@@ -13,6 +14,7 @@ class EmergencyContact {
     required this.phone,
     this.email = '',
     this.relation = '',
+    this.priority = 1,
   });
 
   factory EmergencyContact.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class EmergencyContact {
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
       relation: json['relation'] ?? '',
+      priority: (json['priority'] as num?)?.toInt() ?? 1,
     );
   }
 }

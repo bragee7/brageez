@@ -18,12 +18,14 @@ class ContactsService {
     required String phone,
     String email = '',
     String relation = '',
+    int priority = 1,
   }) async {
     await _api.post('/contacts', {
       'name': name,
       'phone': phone,
       'email': email,
       'relation': relation,
+      'priority': priority,
     });
   }
 
@@ -33,12 +35,14 @@ class ContactsService {
     required String phone,
     String email = '',
     String relation = '',
+    int priority = 1,
   }) async {
     await _api.put('/contacts/$id', {
       'name': name,
       'phone': phone,
       'email': email,
       'relation': relation,
+      'priority': priority,
     });
   }
 

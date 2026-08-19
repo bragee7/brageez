@@ -53,6 +53,7 @@ export const sosAPI = {
   }),
   getCases: () => api.get('/sos'),
   getCase: (id) => api.get(`/sos/${id}`),
+  getCaseTimeline: (id) => api.get(`/sos/${id}/timeline`),
   updateCase: (id, data) => api.put(`/sos/${id}`, data),
   updateLocation: (id, data) => api.put(`/sos/${id}/location`, data)
 };
@@ -68,6 +69,8 @@ export const adminAPI = {
   getOverview: () => api.get('/admin/stats/overview'),
   getRegistrations: (days = 30) => api.get(`/admin/stats/registrations?days=${days}`),
   getCasesByDay: (days = 30) => api.get(`/admin/stats/cases-by-day?days=${days}`),
+  getResponseTimes: () => api.get('/admin/stats/response-times'),
+  getOfficerKpis: () => api.get('/admin/stats/officer-kpis'),
   getCasesByUser: () => api.get('/admin/stats/cases-by-user'),
   getUsers: (params = {}) => api.get('/admin/users', { params }),
   createUser: (data) => api.post('/admin/users', data),

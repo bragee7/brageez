@@ -91,6 +91,7 @@ router.get('/stats/overview', async (req, res) => {
     const usersToday = await query('SELECT COUNT(*)::int AS count FROM users WHERE created_at::date = CURRENT_DATE');
     const totalContacts = await query('SELECT COUNT(*)::int AS count FROM contacts');
     const auditCount = await query('SELECT COUNT(*)::int AS count FROM audit_log');
+    const avgResponseMinutes = await query("SELECT ROUND(AVG(EXTRACT(EPOCH FROM (first_response_at - created_at))/60)::numeric,1)::float AS avg FROM sos_cases WHERE first_response_at IS NOT NULL");
 
     res.json({
       totalUsers: totalUsers[0].count,
@@ -100,7 +101,8 @@ router.get('/stats/overview', async (req, res) => {
       casesToday: casesToday[0].count,
       usersToday: usersToday[0].count,
       totalContacts: totalContacts[0].count,
-      auditCount: auditCount[0].count
+      auditCount: auditCount[0].count,
+      avgResponseMinutes: avgResponseMinutes[0].avg
     });
   } catch (error) {
     console.error('Admin overview error:', error);
@@ -141,6 +143,55 @@ router.get('/stats/cases-by-day', async (req, res) => {
   } catch (error) {
     console.error('Admin cases-by-day error:', error);
     res.status(500).json({ error: 'Error fetching case stats' });
+  }
+});
+
+router.get('/stats/response-times', async (req, res) => {
+  try {
+    const overallRow = await query(
+      `SELECT COUNT(*)::int AS responded_count,
+              ROUND(AVG(EXTRACT(EPOCH FROM (first_response_at - created_at)) / 60)::numeric, 1)::float AS avg_minutes,
+              MAX(EXTRACT(EPOCH FROM (first_response_at - created_at)) / 60)::float AS max_minutes
+       FROM sos_cases
+       WHERE first_response_at IS NOT NULL`
+    );
+    const perOfficerRows = await query(
+      `SELECT assigned_officer AS officer,
+              COUNT(*)::int AS cases,
+              ROUND(AVG(EXTRACT(EPOCH FROM (first_response_at - created_at)) / 60)::numeric, 1)::float AS avg_minutes,
+              MAX(EXTRACT(EPOCH FROM (first_response_at - created_at)) / 60)::float AS max_minutes
+       FROM sos_cases
+       WHERE first_response_at IS NOT NULL
+         AND assigned_officer IS NOT NULL
+         AND assigned_officer <> ''
+       GROUP BY assigned_officer
+       ORDER BY avg_minutes ASC`
+    );
+    res.json({ overall: overallRow[0], perOfficer: perOfficerRows });
+  } catch (error) {
+    console.error('Admin response-times error:', error);
+    res.status(500).json({ error: 'Error fetching response time stats' });
+  }
+});
+
+router.get('/stats/officer-kpis', async (req, res) => {
+  try {
+    const rows = await query(
+      `SELECT assigned_officer AS officer,
+              COUNT(*)::int AS cases_handled,
+              COUNT(*) FILTER (WHERE status = 'Resolved')::int AS resolved_count,
+              COUNT(*) FILTER (WHERE status = 'Pending')::int AS pending_count,
+              ROUND(AVG(EXTRACT(EPOCH FROM (first_response_at - created_at)) / 60)::numeric, 1)::float AS avg_response_minutes
+       FROM sos_cases
+       WHERE assigned_officer IS NOT NULL
+         AND assigned_officer <> ''
+       GROUP BY assigned_officer
+       ORDER BY cases_handled DESC`
+    );
+    res.json({ officers: rows });
+  } catch (error) {
+    console.error('Admin officer-kpis error:', error);
+    res.status(500).json({ error: 'Error fetching officer KPIs' });
   }
 });
 
@@ -419,7 +470,7 @@ router.put('/cases/:id', async (req, res) => {
 
     await query(
       `UPDATE sos_cases
-       SET status = $1, notes = $2, priority = $3, case_type = $4, assigned_officer = $5, updated_at = now()
+       SET status = $1, notes = $2, priority = $3, case_type = $4, assigned_officer = $5, first_response_at = COALESCE(first_response_at, now()), updated_at = now()
        WHERE id = $6`,
       [newStatus, newNotes, newPriority, newType, newOfficer, req.params.id]
     );

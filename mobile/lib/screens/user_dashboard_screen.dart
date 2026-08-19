@@ -36,8 +36,10 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   String _relation = '';
+  int _priority = 1;
 
   static const _relations = ['Parent', 'Spouse', 'Sibling', 'Friend', 'Colleague', 'Other'];
+  static const _priorities = [1, 2, 3, 4, 5];
 
   @override
   void initState() {
@@ -114,6 +116,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     _phoneController.clear();
     _emailController.clear();
     _relation = '';
+    _priority = 1;
     setState(() {
       _showAddContact = false;
       _editingContactId = null;
@@ -125,6 +128,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     _phoneController.clear();
     _emailController.clear();
     _relation = '';
+    _priority = 1;
     setState(() {
       _showAddContact = true;
       _editingContactId = null;
@@ -136,6 +140,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     _phoneController.text = contact.phone;
     _emailController.text = contact.email;
     _relation = contact.relation;
+    _priority = contact.priority;
     setState(() {
       _showAddContact = false;
       _editingContactId = contact.id;
@@ -160,6 +165,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           phone: phone,
           email: email,
           relation: _relation,
+          priority: _priority,
         );
       } else {
         await contacts.add(
@@ -167,6 +173,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           phone: phone,
           email: email,
           relation: _relation,
+          priority: _priority,
         );
       }
       if (mounted) _resetContactForm();
@@ -917,6 +924,19 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
             onChanged: (v) => setState(() => _relation = v ?? ''),
           ),
           const SizedBox(height: 12),
+          DropdownButtonFormField<int>(
+            initialValue: _priority,
+            decoration: const InputDecoration(
+              labelText: 'Priority (1 = highest)',
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            items: _priorities
+                .map((p) => DropdownMenuItem(value: p, child: Text('P$p')))
+                .toList(),
+            onChanged: (v) => setState(() => _priority = v ?? 1),
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -1005,6 +1025,19 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
               onChanged: (v) => setState(() => _relation = v ?? ''),
             ),
             const SizedBox(height: 12),
+            DropdownButtonFormField<int>(
+              initialValue: _priority,
+              decoration: const InputDecoration(
+                labelText: 'Priority (1 = highest)',
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              items: _priorities
+                  .map((p) => DropdownMenuItem(value: p, child: Text('P$p')))
+                  .toList(),
+              onChanged: (v) => setState(() => _priority = v ?? 1),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -1071,6 +1104,20 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
                         child: Text(
                           contact.relation,
                           style: const TextStyle(color: AppColors.blue300, fontSize: 11),
+                        ),
+                      ),
+                    ],
+                    if (contact.priority > 1) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.amber900,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          'P${contact.priority}',
+                          style: const TextStyle(color: AppColors.amber300, fontSize: 11),
                         ),
                       ),
                     ],
